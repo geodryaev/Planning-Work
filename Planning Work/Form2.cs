@@ -832,11 +832,14 @@ namespace Planning_Work
 
                 arrayTable[i, ColumnIndex]._tema = arrayTable[RowTwo, DragColumn]._tema;
                 arrayTable[RowTwo, DragColumn]._tema = "";
+
+                dataGridView1[DragColumn, RowTwo].Style.BackColor = Color.White; 
                 RowTwo++;
             }
         }
 
         public int DragAndDrop_verificationsUp ()
+
         {
             int answer = 0;
 
