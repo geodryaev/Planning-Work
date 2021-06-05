@@ -719,41 +719,65 @@ namespace Planning_Work
             
             int up = DragAndDrop_verificationsUp();
             int down = DragAndDrop_verificationsDown();
+            numberGroup = dataGridView1[DragColumn, 3].Value.ToString();
+            disciplines = arrayTable[DragRow, DragColumn]._disiplines;
+            tema = arrayTable[DragRow, DragColumn]._tema;
+            room = arrayTable[DragRow, DragColumn]._rooms;
+            teach = arrayTable[DragRow, DragColumn]._teacher;
+
+
 
             if (dataGridView1[hit.ColumnIndex, hit.RowIndex].ReadOnly != true)
             {
-                if (dataGridView1[hit.ColumnIndex, 3].Value.ToString() == dataGridView1[DragColumn, 3].Value.ToString())
+                if (arrayTable[DragRow,DragColumn]._teacher != "" && arrayTable[DragRow, DragColumn]._teacher != null)
                 {
-                    if (DragAndDrop_chaekPool(hit.RowIndex, hit.ColumnIndex, up, down))
+                    if (dataGridView1[hit.ColumnIndex, 3].Value.ToString() == dataGridView1[DragColumn, 3].Value.ToString())
                     {
-                        if (dataGridView1[hit.ColumnIndex, hit.RowIndex].Value != null)
+                        if (DragAndDrop_chaekPool(hit.RowIndex, hit.ColumnIndex, up, down))
                         {
+                            if (dataGridView1[hit.ColumnIndex, hit.RowIndex].Value != null)
+                            {
 
-                            DragAndDrop_change1(hit.ColumnIndex, hit.RowIndex, up, down);
+                                DragAndDrop_change1(hit.ColumnIndex, hit.RowIndex, up, down);
 
-                            //allCheakPozizitions(DragRow, DragColumn);
-                            //allCheakPozizitions(hit.RowIndex, hit.ColumnIndex);
+                                for (int i = 0; i <= down + up; i++ )
+                                {
+                                    allCheakPozizitions(DragRow-up+i, DragColumn);
+                                    allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
+                                }
+                                //allCheakPozizitions(DragRow - up + i, DragColumn);
+                                //allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
+                               
+                            }
+                            else
+                            {
+                                DragAndDrop_change2(hit.ColumnIndex, hit.RowIndex, up, down);
+
+
+                                for (int i = 0; i <= down + up; i++)
+                                {
+                                    allCheakPozizitions(DragRow - up + i, DragColumn);
+                                    allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
+                                }
+
+                            }
                         }
                         else
                         {
-                            DragAndDrop_change2(hit.ColumnIndex, hit.RowIndex, up, down);
-
-
-                            //allCheakPozizitions(DragRow, DragColumn);
-                            //allCheakPozizitions(hit.RowIndex, hit.ColumnIndex);
-
+                            MessageBox.Show("Нехватает места для вставки данной пары");
                         }
+
+
                     }
                     else
                     {
-                        MessageBox.Show("Нехватает места для вставки данной пары");
+                        MessageBox.Show("Вы пытаетесь вставить пары из группы " + dataGridView1[hit.ColumnIndex, 3].Value + " в группу " + dataGridView1[DragColumn, 3].Value);
                     }
-                    
-                   
+
                 }
                 else
                 {
-                    MessageBox.Show("Вы пытаетесь вставить пары из группы " + dataGridView1[hit.ColumnIndex, 3].Value + " в группу " + dataGridView1[DragColumn, 3].Value);
+                    MessageBox.Show("Пожалуйста, запоните для начала ячейку");
                 }
 
             }
@@ -915,7 +939,7 @@ namespace Planning_Work
         {
             row = e.RowIndex;
             colmn = e.ColumnIndex;
-            if (!(arrayTable[row, colmn]._disiplines == null && arrayTable[row, colmn]._disiplines == ""))
+            if (row >-1 && colmn >-1 &&!(arrayTable[row, colmn]._disiplines == null && arrayTable[row, colmn]._disiplines == ""))
             {
                 if (cheakCells(arrayTable[e.RowIndex, e.ColumnIndex]))
                 {
@@ -951,7 +975,7 @@ namespace Planning_Work
             int countless = searchGroup(numberGroup);
             for (int i = 0; i < lessons[countless]._arrayLesson.Length; i++)
             {
-                if (lessons[countless]._arrayLesson[i]._nameDiscipline == fDisciplines.Substring(0, disciplines.Length - 1) && lessons[countless]._arrayLesson[i]._tema == fTems)
+                if (lessons[countless]._arrayLesson[i]._nameDiscipline == fDisciplines && lessons[countless]._arrayLesson[i]._tema == fTems)
                 {
                     return i;
                 }
@@ -1117,9 +1141,9 @@ namespace Planning_Work
             for (int j = 0; j < allRow; j++)
             {
                 if (arrayTable[j, Fcolumn]._disiplines != null)
+                {
                     for (int i = 0; i < j; i++)
                     {
-
                         if (arrayTable[i, Fcolumn]._disiplines != null && arrayTable[i, Fcolumn]._disiplines.Length != 0 && arrayTable[j, Fcolumn]._disiplines != null && arrayTable[j, Fcolumn]._disiplines.Length != 0 && searchTems(arrayTable[i, Fcolumn]._disiplines, arrayTable[i, Fcolumn]._tema) > searchTems(arrayTable[j, Fcolumn]._disiplines, arrayTable[j, Fcolumn]._tema) && arrayTable[i, Fcolumn]._down != true && arrayTable[j, Fcolumn]._down != true)
                         {
                             dataGridView1[Fcolumn, j].Style.ForeColor = colorDialog4.Color;
@@ -1130,8 +1154,8 @@ namespace Planning_Work
                                 dataGridView1[Fcolumn, i].ToolTipText += "Нарушение построения логики" + "\n";
                         }
                     }
+                }
             }
-
         }
 
         //Проверка при вставке или замене элемента
@@ -1154,10 +1178,10 @@ namespace Planning_Work
                 cheakGorizontal(i);
             }
 
-            for (int i = 0; i < allColumn; i++)
-            {
-                cheakVertical(i);
-            }
+            
+            
+                cheakVertical(fcolumn);
+            
         }
 
 
