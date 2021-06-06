@@ -1261,7 +1261,7 @@ namespace Planning_Work
         public void GetOneAllLessin (DataGridView dategridView, int row, int column, int space, int allRow, CellsTable[,] arrayTable)
         {
             int count = 0;
-            while (_count > _countForGetOneAllLessin + 1 && _all[_countForGetOneAllLessin].kyrs == _all[_countForGetOneAllLessin + 1].kyrs)
+             while (_count > _countForGetOneAllLessin + 1 && _all[_countForGetOneAllLessin].kyrs == _all[_countForGetOneAllLessin + 1].kyrs)
             {
                 int pipidastr = _countForGetOneAllLessin;
                 while (_count > _countForGetOneAllLessin+1 && _all[_countForGetOneAllLessin].fac == _all[_countForGetOneAllLessin + 1].fac && _all[_countForGetOneAllLessin].kyrs == _all[_countForGetOneAllLessin + 1].kyrs)
@@ -1273,7 +1273,6 @@ namespace Planning_Work
                 
                 dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
                 count++;
-                
 
                 while (_count > pipidastr+1 && _all[pipidastr].fac == _all[pipidastr + 1].fac && _all[pipidastr].kyrs == _all[pipidastr + 1].kyrs)
                 {
@@ -1305,13 +1304,13 @@ namespace Planning_Work
                 }
             }
 
-            dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
-            count++;
-            dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
-            for (int i = 0; i < allRow; i++)
-            {
-                arrayTable[i, column + count]._down = true;
-            }
+            //dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
+            //count++;
+            //dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
+            //for (int i = 0; i < allRow; i++)
+            //{
+            //    arrayTable[i, column + count]._down = true;
+            //}
 
             if (_count == _countForGetOneAllLessin)
             {
