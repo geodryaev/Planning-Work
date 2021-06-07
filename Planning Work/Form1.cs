@@ -1304,14 +1304,6 @@ namespace Planning_Work
                 }
             }
 
-            //dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
-            //count++;
-            //dategridView[column + count, row].Value = _all[_countForGetOneAllLessin].AllLessin;
-            //for (int i = 0; i < allRow; i++)
-            //{
-            //    arrayTable[i, column + count]._down = true;
-            //}
-
             if (_count == _countForGetOneAllLessin)
             {
                 _countForGetOneAllLessin = 0;

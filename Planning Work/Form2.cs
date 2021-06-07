@@ -22,7 +22,8 @@ namespace Planning_Work
     {
         public int row, colmn, countFile, allRow, allColumn, ok = 0, countFirst, countTwo, countTree, countFour, countFive, indexRow, indexColumn, ItIsI = 0, hours, hour, DragRow, DragColumn, countGropeForSql;
         public string numberGroup, disciplines, tema, room, teach;
-        public bool[] numberWork = new bool[6];
+        public bool[] numberWork = new bool[6]; 
+        public bool _pasteOrCut = false;
         public AllLessinAndRooms clas;
         public Teacher teacher;
         public AllLessin[] lessons;
@@ -706,8 +707,15 @@ namespace Planning_Work
         //Вырезка
         private void button9_Click(object sender, EventArgs e)
         {
+            
+            if (!dataGridView1[colmn, row].ReadOnly)
+            {
+                int up = DragAndDrop_verificationsUp (), down = DragAndDrop_verificationsDown();
 
+
+            }
         }
+
 
         // Drag and drop
         private void dataGridView1_DragDrop(object sender, DragEventArgs e)
