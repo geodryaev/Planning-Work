@@ -20,7 +20,7 @@ namespace Planning_Work
 {
     public partial class Form2 : Form
     {
-        public int row, colmn, countFile, allRow, allColumn, ok = 0, countFirst, countTwo, countTree, countFour, countFive, indexRow, indexColumn, ItIsI = 0, hours, hour, DragRow, DragColumn, countGropeForSql;
+        public int cutRow, cutColumn,row, colmn, countFile, allRow, allColumn, ok = 0, countFirst, countTwo, countTree, countFour, countFive, indexRow, indexColumn, ItIsI = 0, hours, hour, DragRow, DragColumn, countGropeForSql;
         public string numberGroup, disciplines, tema, room, teach;
         public bool[] numberWork = new bool[6]; 
         public bool _pasteOrCut = false;
@@ -31,6 +31,7 @@ namespace Planning_Work
         public DateTime time;
         public Allpeople people;
         public CellsTable[,] arrayTable;
+        public CellsTable cut_Buufer;
         public AllColorDisipilens arrayColorDisiplines;
         public TeacherForSql sqlSupTeacher = new TeacherForSql();
 
@@ -707,10 +708,42 @@ namespace Planning_Work
         //Вырезка
         private void button9_Click(object sender, EventArgs e)
         {
-            
             if (!dataGridView1[colmn, row].ReadOnly)
             {
-                int up = DragAndDrop_verificationsUp (), down = DragAndDrop_verificationsDown();
+                if (!_pasteOrCut)
+                {
+                    int up = UpCut(), down = DownCut();
+                    cutRow = up + down + 1;
+                    cut_Buufer = arrayTable[row, colmn];
+                    for (int i = row - up; i <= row + down; i++)
+                    {
+                        arrayTable[i, colmn]._disiplines = null;
+                        arrayTable[i, colmn]._rooms = null;
+                        arrayTable[i, colmn]._teacher = null;
+                        arrayTable[i, colmn]._tema = null;
+                        dataGridView1[colmn, i].Value = null;
+                    }
+                    
+                    button9.BackgroundImage = Properties.Resources.image2;
+                    _pasteOrCut = true;
+                }
+                else
+                {
+                    if (DragAndDrop_chaekPool(row, colmn, 0, cutRow))
+                    {
+                        for (int i = row; i < row + cutRow; i++)
+                        {
+                            arrayTable[i, colmn] = cut_Buufer;
+                            dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms + " " + cut_Buufer._teacher;
+                        }
+                        _pasteOrCut = false;
+                        button9.BackgroundImage = Properties.Resources.cut_105155;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не хватат места");
+                    }
+                }
 
 
             }
@@ -802,7 +835,6 @@ namespace Planning_Work
                     return false;
             }
 
-
             return true;
         }
 
@@ -871,7 +903,6 @@ namespace Planning_Work
         }
 
         public int DragAndDrop_verificationsUp ()
-
         {
             int answer = 0;
 
@@ -882,12 +913,32 @@ namespace Planning_Work
             return answer;
         }
 
+        public int UpCut()
+        {
+            int answer = 0;
+
+            for (int i = row - 3; i < row; i++)
+                if (arrayTable[row, colmn]._disiplines == arrayTable[i, colmn]._disiplines && arrayTable[row, colmn]._tema == arrayTable[i, colmn]._tema)
+                    answer++;
+
+            return answer;
+        }
         public int DragAndDrop_verificationsDown()
         {
             int answer = 0;
 
             for (int i = DragRow + 3; i > DragRow; i--)
                 if (arrayTable[DragRow, DragColumn]._disiplines == arrayTable[i, DragColumn]._disiplines && arrayTable[DragRow, DragColumn]._tema == arrayTable[i, DragColumn]._tema)
+                    answer++;
+
+            return answer;
+        }
+        public int DownCut()
+        {
+            int answer = 0;
+
+            for (int i = row + 3; i > row; i--)
+                if (arrayTable[row, colmn]._disiplines == arrayTable[i, colmn]._disiplines && arrayTable[row, colmn]._tema == arrayTable[i, colmn]._tema)
                     answer++;
 
             return answer;

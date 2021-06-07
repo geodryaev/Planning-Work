@@ -45,9 +45,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.button9 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -164,17 +163,6 @@
             this.label8.Size = new System.Drawing.Size(0, 13);
             this.label8.TabIndex = 11;
             // 
-            // button9
-            // 
-            this.button9.BackgroundImage = global::Planning_Work.Properties.Resources.cut_105155;
-            this.button9.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button9.Location = new System.Drawing.Point(1676, 12);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(76, 69);
-            this.button9.TabIndex = 19;
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
-            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(1676, 1022);
@@ -184,7 +172,20 @@
             this.button2.Text = "Выход";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            
+            // 
+            // button9
+            // 
+            this.button9.BackColor = System.Drawing.Color.White;
+            this.button9.BackgroundImage = global::Planning_Work.Properties.Resources.cut_105155;
+            this.button9.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button9.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button9.Location = new System.Drawing.Point(1676, 12);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(90, 84);
+            this.button9.TabIndex = 19;
+            this.button9.UseVisualStyleBackColor = false;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // Form2
             // 
@@ -192,7 +193,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SlateGray;
             this.ClientSize = new System.Drawing.Size(1920, 1080);
-            this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.checkBox1);
@@ -236,6 +236,5 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
     }
 }
