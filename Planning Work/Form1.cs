@@ -41,7 +41,7 @@ namespace Planning_Work
         int countAllLessons = 0;
         int Kastil1 = 0;
         
-        KMA clas = new KMA();
+        KMA clas = new KMA(); 
         AllLessinAndRooms AllLessinRooms = new AllLessinAndRooms();
 
         //time
@@ -100,12 +100,10 @@ namespace Planning_Work
                         progressBar1.Value++;
                         for (int i = 0; i < count; i++) 
                         {
-
                             baseItem.pushElements(name, arrayAllLessin[i], NormalNameKyrs(xlsWB.Name));
                             allLesson[countAllLessons] = new AllLessin(Convert.ToString(arrayAllLessin[i]),countTriple);
                             allLesson[countAllLessons].pushtriple(lesson);
                             countAllLessons++;
-                            
                         }
                         progressBar1.Value++;
                     }
@@ -303,14 +301,14 @@ namespace Planning_Work
                     connection.Open();
                     if (Dont_createTable == false)
                     {
-                        using (var cmd = new SqlCommand("CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
+                        using (var cmd = new SqlCommand("CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), comments NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
                     }
                     else
                     {
-                        using (var cmd = new SqlCommand("DROP TABLE _allPeolpe; \n CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
+                        using (var cmd = new SqlCommand("DROP TABLE _allPeolpe; \n CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), comments NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
@@ -427,8 +425,8 @@ namespace Planning_Work
                 {
                     for (int j = 0; j < allLesson[i]._arrayLesson.Length; j++)
                     {
-                        string sqlComandForSetData = "INSERT INTO _allPeolpe (nameGroup, fac, nameDisciplines, tema, timeLection, setA) VALUES";
-                        sqlComandForSetData += " (\'" + allLesson[i]._nameAllLessin.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._fack + "\', \'" + allLesson[i]._arrayLesson[j]._nameDiscipline.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._tema.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._time.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._set + "\')";
+                        string sqlComandForSetData = "INSERT INTO _allPeolpe (nameGroup, fac, nameDisciplines, tema, comments, timeLection, setA) VALUES";
+                        sqlComandForSetData += " (\'" + allLesson[i]._nameAllLessin.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._fack + "\', \'" + allLesson[i]._arrayLesson[j]._nameDiscipline.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._tema.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._coments.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._time.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._set + "\')";
                         connection.Open();
                         using (var cmd = new SqlCommand(sqlComandForSetData, connection))
                         {
@@ -850,13 +848,13 @@ namespace Planning_Work
         //Считывание предметов
         public Triple[] getLess(Excel.Worksheet sheet, ref int countPenis)
         {
-            int column = 3;
+            int column = 5;
             int row =3;
             while (RusMont(dateTimePicker1.Value.Month.ToString()) != sheet.Cells[row, column].Text && sheet.Cells[row,column].Text != "///")
             {
-                column+=3;
+                column+=4;
             }
-            
+            column++;
             int startColumn = column;
             int strartRow = row;
             row++;
@@ -881,9 +879,10 @@ namespace Planning_Work
                 {
                     answer[countPenis]._time = sheet.Cells[row, column+1].Text;
                     answer[countPenis]._tema = sheet.Cells[row, column].Text;
-                    answer[countPenis]._nameDiscipline = sheet.Cells[row, 1].Text;
+                    answer[countPenis]._nameDiscipline = sheet.Cells[row, 2].Text;
                     answer[countPenis]._set = true;
                     answer[countPenis]._fack = Kastil1;
+                    answer[countPenis]._coments = sheet.Cells[row, column - 1].Text;
                     countPenis++;
                 }
                 row++;
@@ -1176,6 +1175,7 @@ namespace Planning_Work
     }
     public struct Triple
     {
+        public string _coments;
         public string _time;
         public string _tema;
         public string _nameDiscipline;

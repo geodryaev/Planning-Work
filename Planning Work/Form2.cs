@@ -155,7 +155,7 @@ namespace Planning_Work
             }
         }
 
-        //Получение AllLesing
+        //Получение AllLesing-----------------------------------------------Даун тут у тебя закомичен ввод из-за добавлений коментов
         private AllLessin[] GetLessingForSQL()
         {
 
@@ -180,8 +180,9 @@ namespace Planning_Work
                                 push._fack = Convert.ToInt32(read.GetValue(2).ToString());
                                 push._nameDiscipline = read.GetValue(3).ToString();
                                 push._tema = read.GetValue(4).ToString();
-                                push._time = read.GetValue(5).ToString();
-                                push._set = Convert.ToBoolean(read.GetValue(6).ToString());
+                                push._time = read.GetValue(6).ToString();
+                                push._coments = read.GetValue(5).ToString();
+                                push._set = Convert.ToBoolean(read.GetValue(7).ToString());
                                 answer[i] = new AllLessin(read.GetValue(1).ToString(), 0);
                                 answer[i].pushOneTriple(push);
                                 start = false;
@@ -192,8 +193,9 @@ namespace Planning_Work
                                 push._fack = Convert.ToInt32(read.GetValue(2).ToString());
                                 push._nameDiscipline = read.GetValue(3).ToString();
                                 push._tema = read.GetValue(4).ToString();
-                                push._time = read.GetValue(5).ToString();
-                                push._set = Convert.ToBoolean(read.GetValue(6).ToString());
+                                push._time = read.GetValue(6).ToString();
+                                push._coments = read.GetValue(5).ToString();
+                                push._set = Convert.ToBoolean(read.GetValue(7).ToString());
                                 if (read.GetValue(1).ToString() == answer[i]._nameAllLessin)
                                 {
                                     answer[i].pushOneTriple(push);
@@ -1164,7 +1166,7 @@ namespace Planning_Work
         {
             for (int i = 0; i < count1; i++)
             {
-                for (int j = 0; j < count2; j++)
+                for (int j = 0; j < less[i]._arrayLesson.Length; j++)
                 {
                     if (less[i]._arrayLesson[j]._nameDiscipline == less[count1]._arrayLesson[count2]._nameDiscipline)
                     {
