@@ -47,6 +47,7 @@ namespace Planning_Work
                 teacher = GetTeacherForSQL();
 
                 InitializeComponent();
+                label2.MaximumSize = new Size(200,800);
                 KeyPreview = true;
                 WindowState = FormWindowState.Maximized;
                 colorDialog1.Color = Color.Red;
@@ -155,7 +156,7 @@ namespace Planning_Work
             }
         }
 
-        //Получение AllLesing-----------------------------------------------Даун тут у тебя закомичен ввод из-за добавлений коментов
+        //Получение AllLesing
         private AllLessin[] GetLessingForSQL()
         {
 
@@ -833,6 +834,11 @@ namespace Planning_Work
             ColorDataGridAll();
         }
 
+        private void Form2_Load(object sender, EventArgs e)
+        {
+
+        }
+
         bool daysAccept(int frow, int fcolumn, int down)
         {
             if (down == 0)
@@ -1089,8 +1095,10 @@ namespace Planning_Work
         //Событие нажатия на ячейку 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            label2.Text = "";
             row = e.RowIndex;
             colmn = e.ColumnIndex;
+            
             if (row > -1 && colmn > -1)
             {
                 
@@ -1098,13 +1106,14 @@ namespace Planning_Work
 
                 if (checkBox1.Checked)
                 {
-
+                    
                     if (!(arrayTable[row, colmn]._disiplines == null && arrayTable[row, colmn]._disiplines == ""))
                     {
                         if (cheakCells(arrayTable[e.RowIndex, e.ColumnIndex]))
                         {
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
+                                label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
                                 Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
                                 form.ShowDialog();
                             }
@@ -1113,6 +1122,7 @@ namespace Planning_Work
                         {
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
+                                label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
                                 Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, arrayTable[e.RowIndex, e.ColumnIndex]._teacher, arrayTable[e.RowIndex, e.ColumnIndex]._rooms, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
                                 form.ShowDialog();
                             }
@@ -1122,6 +1132,17 @@ namespace Planning_Work
             }
             
 
+        }
+
+        public string searchCommentsTems(string nameGroupe,string nameDisiplines, string tems)
+        {
+            int countSearchForGroup = 0, countSearchTems = 0;
+            while (countSearchForGroup < lessons.Length && lessons[countSearchForGroup]._nameAllLessin != nameGroupe)
+                countSearchForGroup++;
+
+            while (countSearchTems < lessons[countSearchForGroup]._arrayLesson.Length && lessons[countSearchForGroup]._arrayLesson[countSearchTems]._tema != tems)
+                countSearchTems++;
+            return lessons[countSearchForGroup]._arrayLesson[countSearchTems]._coments;
         }
 
         public bool cheakCells(CellsTable cell)
