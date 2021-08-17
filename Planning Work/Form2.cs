@@ -179,10 +179,11 @@ namespace Planning_Work
                                 Triple push;
                                 push._fack = Convert.ToInt32(read.GetValue(2).ToString());
                                 push._nameDiscipline = read.GetValue(3).ToString();
-                                push._tema = read.GetValue(4).ToString();
-                                push._time = read.GetValue(6).ToString();
-                                push._coments = read.GetValue(5).ToString();
-                                push._set = Convert.ToBoolean(read.GetValue(7).ToString());
+                                push._comentsDisciplines = read.GetValue(4).ToString(); ;
+                                push._tema = read.GetValue(5).ToString();
+                                push._coments = read.GetValue(6).ToString();
+                                push._time = read.GetValue(7).ToString();
+                                push._set = Convert.ToBoolean(read.GetValue(8).ToString());
                                 answer[i] = new AllLessin(read.GetValue(1).ToString(), 0);
                                 answer[i].pushOneTriple(push);
                                 start = false;
@@ -192,10 +193,11 @@ namespace Planning_Work
                                 Triple push;
                                 push._fack = Convert.ToInt32(read.GetValue(2).ToString());
                                 push._nameDiscipline = read.GetValue(3).ToString();
-                                push._tema = read.GetValue(4).ToString();
-                                push._time = read.GetValue(6).ToString();
-                                push._coments = read.GetValue(5).ToString();
-                                push._set = Convert.ToBoolean(read.GetValue(7).ToString());
+                                push._comentsDisciplines = read.GetValue(4).ToString(); ;
+                                push._tema = read.GetValue(5).ToString();
+                                push._coments = read.GetValue(6).ToString();
+                                push._time = read.GetValue(7).ToString();
+                                push._set = Convert.ToBoolean(read.GetValue(8).ToString());
                                 if (read.GetValue(1).ToString() == answer[i]._nameAllLessin)
                                 {
                                     answer[i].pushOneTriple(push);
@@ -728,6 +730,11 @@ namespace Planning_Work
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             button9.PerformClick();
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
 
         //Вырезка

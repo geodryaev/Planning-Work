@@ -301,14 +301,14 @@ namespace Planning_Work
                     connection.Open();
                     if (Dont_createTable == false)
                     {
-                        using (var cmd = new SqlCommand("CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), comments NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
+                        using (var cmd = new SqlCommand("CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), commetsDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), comments NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
                     }
                     else
                     {
-                        using (var cmd = new SqlCommand("DROP TABLE _allPeolpe; \n CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), comments NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
+                        using (var cmd = new SqlCommand("DROP TABLE _allPeolpe; \n CREATE TABLE _allPeolpe ( ID int NOT NULL IDENTITY(1,1) primary key, nameGroup NVARCHAR(MAX), fac NVARCHAR(MAX), nameDisciplines NVARCHAR(MAX), commetsDisciplines NVARCHAR(MAX), tema NVARCHAR(MAX), comments NVARCHAR(MAX), timeLection NVARCHAR(MAX), setA NVARCHAR(MAX))", connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
@@ -425,8 +425,8 @@ namespace Planning_Work
                 {
                     for (int j = 0; j < allLesson[i]._arrayLesson.Length; j++)
                     {
-                        string sqlComandForSetData = "INSERT INTO _allPeolpe (nameGroup, fac, nameDisciplines, tema, comments, timeLection, setA) VALUES";
-                        sqlComandForSetData += " (\'" + allLesson[i]._nameAllLessin.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._fack + "\', \'" + allLesson[i]._arrayLesson[j]._nameDiscipline.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._tema.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._coments.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._time.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._set + "\')";
+                        string sqlComandForSetData = "INSERT INTO _allPeolpe (nameGroup, fac, nameDisciplines, commetsDisciplines, tema, comments, timeLection, setA) VALUES";
+                        sqlComandForSetData += " (\'" + allLesson[i]._nameAllLessin.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._fack + "\', \'" + allLesson[i]._arrayLesson[j]._nameDiscipline.Trim()+ "\', \'" + allLesson[i]._arrayLesson[j]._comentsDisciplines.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._tema.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._coments.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._time.Trim() + "\', \'" + allLesson[i]._arrayLesson[j]._set + "\')";
                         connection.Open();
                         using (var cmd = new SqlCommand(sqlComandForSetData, connection))
                         {
@@ -872,18 +872,47 @@ namespace Planning_Work
             Triple [] answer = new Triple[countPenis];
             countPenis = 0;
             row++;
-            
+
+            string buferrForCommetnst = "";
+            int coiuntForComments = 0;
+
             while(sheet.Cells[row, column].Text != "///")
             {
                 if (sheet.Cells[row, column].Text != "")
                 {
-                    answer[countPenis]._time = sheet.Cells[row, column+1].Text;
+                    while (sheet.Cells[row, 2].Text == sheet.Cells[row + 1, 2].Text)
+                    {
+                        if (sheet.Cells[row, column].Text != "")
+                        {
+
+                            answer[countPenis]._time = sheet.Cells[row, column + 1].Text;
+                            answer[countPenis]._tema = sheet.Cells[row, column].Text;
+                            answer[countPenis]._nameDiscipline = sheet.Cells[row, 2].Text;
+                            answer[countPenis]._set = true;
+                            answer[countPenis]._fack = Kastil1;
+                            answer[countPenis]._coments = sheet.Cells[row, column - 1].Text;
+                            buferrForCommetnst += sheet.Cells[row, 3].Text + " ";
+                            countPenis++;
+                            coiuntForComments++;
+                        }
+                        row++;
+                    }
+                    answer[countPenis]._time = sheet.Cells[row, column + 1].Text;
                     answer[countPenis]._tema = sheet.Cells[row, column].Text;
                     answer[countPenis]._nameDiscipline = sheet.Cells[row, 2].Text;
                     answer[countPenis]._set = true;
                     answer[countPenis]._fack = Kastil1;
                     answer[countPenis]._coments = sheet.Cells[row, column - 1].Text;
+                    buferrForCommetnst += sheet.Cells[row, 3].Text;
+                    coiuntForComments++;
+                    for (int i = 0; i< coiuntForComments;i++)
+                    {
+                        answer[countPenis - i]._comentsDisciplines = buferrForCommetnst;
+                    }
+
                     countPenis++;
+                    buferrForCommetnst = "";
+                    coiuntForComments = 0;
                 }
                 row++;
             }
@@ -1175,6 +1204,7 @@ namespace Planning_Work
     }
     public struct Triple
     {
+        public string _comentsDisciplines;
         public string _coments;
         public string _time;
         public string _tema;
