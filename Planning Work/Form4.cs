@@ -12,12 +12,15 @@ namespace Planning_Work
 {
     public partial class Form4 : Form
     {
+        int countPrepods, pozitionX = 170, pozitionY = 210;
+        ComboBox[] arr;
         CellsTable[,] cellsTables;
         DataGridViewCellEventArgs ob;
         DataGridView dataGridView;
         public Form4(string nameDisciplines, string tem, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
         {
             InitializeComponent();
+            countPrepods = 1;
             cellsTables = _arrayTable;
             dataGridView = dataGridView1;
             ob = e;
@@ -67,6 +70,7 @@ namespace Planning_Work
         public Form4(string nameDisciplines, string tem, string teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
         {
             InitializeComponent();
+            countPrepods = 1;
             cellsTables = _arrayTable;
             dataGridView = dataGridView1;
             ob = e;
@@ -192,6 +196,14 @@ namespace Planning_Work
                 cellsTables[i, column]._teacher = comboBox4.Text;
                 cellsTables[i, column]._tema = comboBox3.Text;
                 dataGridView[column, i].Value = comboBox2.Text + " " + comboBox3.Text + " " + comboBox1.Text + " " + comboBox4.Text;
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (countPrepods <= 4)
+            {
+                Controls.Add(new ComboBox() { Location = new Point(pozitionX,pozitionY+45), Width = 278, Height = 21});
             }
         }
     }

@@ -40,12 +40,14 @@ namespace Planning_Work
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // NameTeacher
             // 
             this.NameTeacher.AutoSize = true;
-            this.NameTeacher.Location = new System.Drawing.Point(35, 165);
+            this.NameTeacher.Location = new System.Drawing.Point(5, 168);
             this.NameTeacher.Name = "NameTeacher";
             this.NameTeacher.Size = new System.Drawing.Size(149, 13);
             this.NameTeacher.TabIndex = 0;
@@ -54,7 +56,7 @@ namespace Planning_Work
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(196, 162);
+            this.comboBox1.Location = new System.Drawing.Point(170, 165);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(278, 21);
             this.comboBox1.TabIndex = 1;
@@ -62,7 +64,7 @@ namespace Planning_Work
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(196, 75);
+            this.comboBox2.Location = new System.Drawing.Point(170, 75);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(278, 21);
             this.comboBox2.TabIndex = 3;
@@ -70,7 +72,7 @@ namespace Planning_Work
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(35, 78);
+            this.label1.Location = new System.Drawing.Point(5, 78);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(52, 13);
             this.label1.TabIndex = 2;
@@ -79,7 +81,7 @@ namespace Planning_Work
             // comboBox3
             // 
             this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(196, 118);
+            this.comboBox3.Location = new System.Drawing.Point(170, 120);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(278, 21);
             this.comboBox3.TabIndex = 5;
@@ -87,7 +89,7 @@ namespace Planning_Work
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(35, 121);
+            this.label2.Location = new System.Drawing.Point(5, 123);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 4;
@@ -96,7 +98,7 @@ namespace Planning_Work
             // comboBox4
             // 
             this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(196, 208);
+            this.comboBox4.Location = new System.Drawing.Point(170, 210);
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(278, 21);
             this.comboBox4.TabIndex = 7;
@@ -104,7 +106,7 @@ namespace Planning_Work
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(35, 211);
+            this.label3.Location = new System.Drawing.Point(5, 214);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(109, 13);
             this.label3.TabIndex = 6;
@@ -140,12 +142,33 @@ namespace Planning_Work
             this.label4.TabIndex = 10;
             this.label4.Text = "Изменение ячейки";
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(455, 209);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(23, 23);
+            this.button3.TabIndex = 11;
+            this.button3.Text = "+";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(484, 209);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(23, 23);
+            this.button4.TabIndex = 12;
+            this.button4.Text = "-";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
             // Form4
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.ClientSize = new System.Drawing.Size(519, 450);
+            this.ClientSize = new System.Drawing.Size(525, 444);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -178,5 +201,7 @@ namespace Planning_Work
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }

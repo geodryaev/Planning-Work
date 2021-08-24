@@ -593,6 +593,7 @@ namespace Planning_Work
                 dateOne = "";
                 dateOne = dateOne + (i + 1).ToString() + "." + time.Month.ToString() + "." + time.Year.ToString();
 
+                
                 dataGridView1[column, row + i * 4].Value = dateOne;
                 dataGridView1[column + 2 + countFirst, row + i * 4].Value = dateOne;
                 dataGridView1[column + 4 + countFirst + countTwo, row + i * 4].Value = dateOne;

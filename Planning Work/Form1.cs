@@ -884,39 +884,51 @@ namespace Planning_Work
                     {
                         if (sheet.Cells[row, column].Text != "")
                         {
-
                             answer[countPenis]._time = sheet.Cells[row, column + 1].Text;
                             answer[countPenis]._tema = sheet.Cells[row, column].Text;
                             answer[countPenis]._nameDiscipline = sheet.Cells[row, 2].Text;
                             answer[countPenis]._set = true;
                             answer[countPenis]._fack = Kastil1;
                             answer[countPenis]._coments = sheet.Cells[row, column - 1].Text;
-                            buferrForCommetnst += sheet.Cells[row, 3].Text + " ";
+                            if (sheet.Cells[row, 3].Text != "")
+                            {
+                                buferrForCommetnst += sheet.Cells[row, 3].Text + " ";
+                            }
                             countPenis++;
                             coiuntForComments++;
                         }
                         row++;
                     }
-                    answer[countPenis]._time = sheet.Cells[row, column + 1].Text;
-                    answer[countPenis]._tema = sheet.Cells[row, column].Text;
-                    answer[countPenis]._nameDiscipline = sheet.Cells[row, 2].Text;
-                    answer[countPenis]._set = true;
-                    answer[countPenis]._fack = Kastil1;
-                    answer[countPenis]._coments = sheet.Cells[row, column - 1].Text;
-                    buferrForCommetnst += sheet.Cells[row, 3].Text;
-                    coiuntForComments++;
-                    for (int i = 0; i< coiuntForComments;i++)
+
+                    if (sheet.Cells[row, column].Text != "")
                     {
-                        answer[countPenis - i]._comentsDisciplines = buferrForCommetnst;
+                        answer[countPenis]._time = sheet.Cells[row, column + 1].Text;
+                        answer[countPenis]._tema = sheet.Cells[row, column].Text;
+                        answer[countPenis]._nameDiscipline = sheet.Cells[row, 2].Text;
+                        answer[countPenis]._set = true;
+                        answer[countPenis]._fack = Kastil1;
+                        answer[countPenis]._coments = sheet.Cells[row, column - 1].Text;
+                        if (sheet.Cells[row, 3].Text != "")
+                        {
+                            buferrForCommetnst += sheet.Cells[row, 3].Text;
+                        }
+                        coiuntForComments++;
+                        countPenis++;
                     }
 
-                    countPenis++;
+                    
+
+                    for (int i = 0; i< coiuntForComments;i++)
+                    {
+                        answer[countPenis - coiuntForComments + i]._comentsDisciplines = buferrForCommetnst.Trim();
+                    }
+
+                    
                     buferrForCommetnst = "";
                     coiuntForComments = 0;
                 }
                 row++;
             }
-
             return answer;
         }
 
