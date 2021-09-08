@@ -14,9 +14,12 @@ namespace Planning_Work
     {
         int countPrepods, pozitionX = 170, pozitionY = 210;
         ComboBox[] arr;
+        int count_box;
         CellsTable[,] cellsTables;
         DataGridViewCellEventArgs ob;
         DataGridView dataGridView;
+        string saveTem, saveDisiplines, saveNameGroupe;
+        Teacher saveTeacher;
         public Form4(string nameDisciplines, string tem, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
         {
             InitializeComponent();
@@ -24,10 +27,20 @@ namespace Planning_Work
             cellsTables = _arrayTable;
             dataGridView = dataGridView1;
             ob = e;
+
+            saveTem = tem;
+            saveTeacher = teacher;
+            saveDisiplines = nameDisciplines;
+            saveNameGroupe = nameGroupe;
+
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;//Класс
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;//Имя предмета
             comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;//Тип
             comboBox4.DropDownStyle = ComboBoxStyle.DropDownList;//Имя преподавателя
+            arr = new ComboBox[4];
+            count_box = 1;
+            arr[0] = comboBox4;
+
 
             comboBox2.Items.Add (nameDisciplines);
             comboBox3.Items.Add(tem);
@@ -39,6 +52,7 @@ namespace Planning_Work
                 if (clas._array[i].AllLessin == nameDisciplines)
                     comboBox1.Items.Add(clas._array[i].rooms);
             }
+
 
 
             if (searchTem(teacher, tem, nameDisciplines, nameGroupe) == -1)
@@ -67,13 +81,18 @@ namespace Planning_Work
             
         }
 
-        public Form4(string nameDisciplines, string tem, string teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
+        public Form4(string nameDisciplines, string tem, string [] teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
         {
             InitializeComponent();
             countPrepods = 1;
             cellsTables = _arrayTable;
             dataGridView = dataGridView1;
             ob = e;
+            saveTem = tem;
+            saveTeacher = teacher;
+            saveDisiplines = nameDisciplines;
+            saveNameGroupe = nameGroupe;
+
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;//Класс
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;//Имя предмета
             comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;//Тип
@@ -82,19 +101,30 @@ namespace Planning_Work
             comboBox1.Items.Add(roomss);
             comboBox2.Items.Add(nameDisciplines);
             comboBox3.Items.Add(tem);
-            comboBox4.Items.Add(teachh);
-            
+            //comboBox4.Items.Add(teachh);
+
+            arr = new ComboBox[4];
+            arr[0] = comboBox4;
+            count_box = 1;
+            arr = new ComboBox[teachh.Length];
+
+            foreach (var item in teachh)
+            {
+                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name = Convert.ToString(count_box) };
+                pozitionY += 45;
+                count_box++;
+            }
+
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
-            comboBox4.SelectedIndex = 0;
+            //comboBox4.SelectedIndex = 0;
 
             for (int i = 0; i < clas._array.Length; i++)
             {
                 if (clas._array[i].AllLessin == nameDisciplines)
                     comboBox1.Items.Add(clas._array[i].rooms);
             }
-
 
             if (searchTem(teacher, tem, nameDisciplines, nameGroupe) == -1)
             {
@@ -107,7 +137,6 @@ namespace Planning_Work
                             comboBox4.Items.Add(teacher._array[i]._teachers[j]);
                         }
                     }
-
                 }
             }
             else
@@ -186,24 +215,75 @@ namespace Planning_Work
             return answer;
         }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if(count_box - 1 >= 1)
+            {
+                Controls.Remove(arr[count_box - 1]);
+                count_box--;
+                pozitionY -= 45;
+            }
+        }
+
         public void set(int up, int down)
         {
+            string boba = "";
+            string[] paxaSexs = new string [count_box];
             int row = ob.RowIndex, column = ob.ColumnIndex;
             for (int i = row - up; i <= row+down;i++ )
             {
+                boba = "";
+                paxaSexs = new string[count_box];
                 cellsTables[i, column]._disiplines = comboBox2.Text;
                 cellsTables[i, column]._rooms = comboBox1.Text;
-                cellsTables[i, column]._teacher = comboBox4.Text;
+                for (int j =0; j < count_box;j++)
+                {
+                    paxaSexs[j] = arr[j].Text;
+                }
+                cellsTables[i, column]._teacher = paxaSexs;
                 cellsTables[i, column]._tema = comboBox3.Text;
-                dataGridView[column, i].Value = comboBox2.Text + " " + comboBox3.Text + " " + comboBox1.Text + " " + comboBox4.Text;
+                foreach (var item in paxaSexs)
+                {
+                    boba += item;
+                    boba += " ";
+                }
+                dataGridView[column, i].Value = comboBox2.Text + " " + comboBox3.Text + " " + comboBox1.Text + " " + boba;
+                
             }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (countPrepods <= 4)
+            if (count_box <= 3)
             {
-                Controls.Add(new ComboBox() { Location = new Point(pozitionX,pozitionY+45), Width = 278, Height = 21});
+                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name =  Convert.ToString(count_box)};
+                Controls.Add(arr[count_box]);
+
+                if (searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe) == -1)
+                {
+                    for (int i = 0; i < saveTeacher._array.Length; i++)
+                    {
+                        if (saveTeacher._array[i]._nameDisiplines == saveDisiplines && saveTeacher._array[i]._numberGroupe == saveNameGroupe)
+                        {
+                            for (int j = 0; j < saveTeacher._array[i]._teachers.Length; j++)
+                            {
+                                arr[count_box].Items.Add(saveTeacher._array[i]._teachers[j]);
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    int count = searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe);
+                    for (int i = 0; i < saveTeacher._array[count]._teachers.Length; i++)
+                    {
+                        arr[count_box].Items.Add(saveTeacher._array[count]._teachers[i]);
+                    }
+                }
+                count_box++;
+                pozitionY += 45;
+                
             }
         }
     }

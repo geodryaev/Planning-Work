@@ -21,7 +21,8 @@ namespace Planning_Work
     public partial class Form2 : Form
     {
         public int cutCount, cutRow,cutColumn,row, colmn, countFile, allRow, allColumn, ok = 0, countFirst, countTwo, countTree, countFour, countFive, indexRow, indexColumn, ItIsI = 0, hours, hour, DragRow, DragColumn, countGropeForSql;
-        public string numberGroup, disciplines, tema, room, teach, numberGroupCut;
+        public string numberGroup, disciplines, tema, room, numberGroupCut;
+        public string [] teach;
         public bool[] numberWork = new bool[6];
         public bool _pasteOrCut = false;
         public AllLessinAndRooms clas;
@@ -514,7 +515,7 @@ namespace Planning_Work
             colorDialog4.ShowDialog();
         }
 
-        // Создание оболочки формы
+        //Создание оболочки формы
         public void createDate(DataGridViewCellPaintingEventArgs e, Allpeople people, int countUploadFile, int row, int column)
         {
             if (e.RowIndex >= 5)
@@ -746,7 +747,7 @@ namespace Planning_Work
             {
                 if (!_pasteOrCut)
                 {
-                    if (arrayTable[row, colmn]._teacher != "" && arrayTable[row, colmn]._teacher != null)
+                    if (arrayTable[row, colmn]._teacher != null)
                     {
                         if (dataGridView1[colmn, row].Value != null)
                         {
@@ -794,7 +795,6 @@ namespace Planning_Work
                                 }
                                 _pasteOrCut = false;
                                 button9.BackgroundImage = Properties.Resources.cut_105155;
-
                             }
                             else
                             {
@@ -817,7 +817,7 @@ namespace Planning_Work
                         arrayTable[cutRow, cutColumn]._disiplines = b._disiplines;
                         arrayTable[cutRow, cutColumn]._tema = b._tema;
                         arrayTable[cutRow, cutColumn]._rooms = b._rooms;
-                        arrayTable[cutRow, cutColumn]._teacher = b._teacher;
+                        arrayTable[cutRow, cutColumn]._teacher = b. _teacher;
                         dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms + " " + cut_Buufer._teacher;
                         dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " " + b._teacher;
 
@@ -877,7 +877,7 @@ namespace Planning_Work
 
             if (dataGridView1[hit.ColumnIndex, hit.RowIndex].ReadOnly != true)
             {
-                if (arrayTable[DragRow, DragColumn]._teacher != "" && arrayTable[DragRow, DragColumn]._teacher != null)
+                if (arrayTable[DragRow, DragColumn]._teacher != null)
                 {
                     if (dataGridView1[hit.ColumnIndex, 3].Value.ToString() == dataGridView1[DragColumn, 3].Value.ToString())
                     {
@@ -951,6 +951,7 @@ namespace Planning_Work
             int RowTwo = DragRow - up;
             for (int i = RowIndex; i <= RowIndex + down + up; i++)
             {
+                string[] teachBuffer;
                 string bufersDataGrid = dataGridView1[ColumnIndex, i].Value.ToString();
                 dataGridView1[ColumnIndex, i].Value = dataGridView1[DragColumn, RowTwo].Value;
                 dataGridView1[DragColumn, RowTwo].Value = bufersDataGrid;
@@ -963,9 +964,9 @@ namespace Planning_Work
                 arrayTable[i, ColumnIndex]._rooms = arrayTable[RowTwo, DragColumn]._rooms;
                 arrayTable[RowTwo, DragColumn]._rooms = bufersDataGrid;
 
-                bufersDataGrid = arrayTable[i, ColumnIndex]._teacher;
+                teachBuffer = arrayTable[i, ColumnIndex]._teacher;
                 arrayTable[i, ColumnIndex]._teacher = arrayTable[RowTwo, DragColumn]._teacher;
-                arrayTable[RowTwo, DragColumn]._teacher = bufersDataGrid;
+                arrayTable[RowTwo, DragColumn]._teacher = teachBuffer;
 
                 bufersDataGrid = arrayTable[i, ColumnIndex]._tema;
                 arrayTable[i, ColumnIndex]._tema = arrayTable[RowTwo, DragColumn]._tema;
@@ -991,7 +992,7 @@ namespace Planning_Work
                 arrayTable[RowTwo, DragColumn]._rooms = "";
 
                 arrayTable[i, ColumnIndex]._teacher = arrayTable[RowTwo, DragColumn]._teacher;
-                arrayTable[RowTwo, DragColumn]._teacher = "";
+                arrayTable[RowTwo, DragColumn]._teacher = null;
 
 
                 arrayTable[i, ColumnIndex]._tema = arrayTable[RowTwo, DragColumn]._tema;
@@ -1114,7 +1115,7 @@ namespace Planning_Work
                         {
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
-                                label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
+                               label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
                                 Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
                                 form.ShowDialog();
                             }
@@ -1148,7 +1149,8 @@ namespace Planning_Work
 
         public bool cheakCells(CellsTable cell)
         {
-            if (cell._disiplines != null && cell._disiplines != "" && cell._tema != null && cell._tema != "" && (cell._rooms == null || cell._rooms == "") && (cell._teacher == null || cell._teacher == ""))
+            if (cell._disiplines != null && cell._disiplines != "" && cell._tema != null && cell._tema != "" && (cell._rooms == null || cell._rooms == "") && (cell._teacher == null || cell._teacher == null
+                ))
                 return true;
 
             return false;
@@ -1445,7 +1447,7 @@ namespace Planning_Work
     }
     public struct CellsTable
     {
-        public string _teacher;
+        public string [] _teacher;
         public string _rooms;
         public string _disiplines;
         public string _tema;
@@ -1502,7 +1504,6 @@ namespace Planning_Work
         public string _teacher;
         public string _team;
     }
-
     public class TeacherForSql
     {
         public OnePozitionsTeacher[] _array;
