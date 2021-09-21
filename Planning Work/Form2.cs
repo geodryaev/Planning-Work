@@ -672,7 +672,7 @@ namespace Planning_Work
             dataGridView1[8 + countFirst + countTwo + countTree, 0].Value = "4 Курс";
             dataGridView1[10 + countFirst + countTwo + countTree + countFour, 0].Value = "5 Курс";
         }
-
+        
         //Закрытие
         private void button2_Click(object sender, EventArgs e)
         {
@@ -724,9 +724,22 @@ namespace Planning_Work
 
         private void Form2_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.C && e.Alt)
+            if ((e.KeyCode == Keys.C && e.Control) && !checkBox1.Checked)
             {
                 button9.PerformClick();
+            }
+
+            if (e.KeyCode == Keys.X && e.Control)
+            {
+                if (checkBox1.Checked)
+                {
+                    checkBox1.Checked = false;
+                }
+                else
+                {
+                    checkBox1.Checked = true;
+
+                }
             }
         }
 
@@ -754,7 +767,7 @@ namespace Planning_Work
                             int up = UpCut(), down = DownCut();
                             cutColumn = colmn;
                             cutRow = row;
-                            cutCount = up + down + 1;
+                            cutCount = up + down+1;
                             cut_Buufer = arrayTable[row, colmn];
                             for (int i = row - up; i <= row + down; i++)
                             {
@@ -764,8 +777,8 @@ namespace Planning_Work
                                 arrayTable[i, colmn]._tema = null;
                                 dataGridView1[colmn, i].Value = null;
                                 dataGridView1[colmn, i].Style.BackColor = Color.White;
+                                allCheakPozizitions(i, colmn);
                             }
-
                             button9.BackgroundImage = Properties.Resources.image2;
                             _pasteOrCut = true;
 
@@ -780,7 +793,7 @@ namespace Planning_Work
                 {
                     if (cutCount != 1)
                     {
-                        if (daysAccept(row, cutColumn, cutCount))
+                        if (daysAccept(row, cutColumn, cutCount-1))
                         {
                             if (DragAndDrop_chaekPool(row, colmn, 0, cutCount-1))
                             {
@@ -790,7 +803,14 @@ namespace Planning_Work
                                     arrayTable[i, colmn]._teacher = cut_Buufer._teacher;
                                     arrayTable[i, colmn]._tema = cut_Buufer._tema;
                                     arrayTable[i, colmn]._rooms = cut_Buufer._rooms;
-                                    dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms + " " + cut_Buufer._teacher;
+                                    
+                                    dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
+                                    foreach (var item in cut_Buufer._teacher)
+                                    {
+                                        dataGridView1[colmn, i].Value += " ";
+                                        dataGridView1[colmn, i].Value += item;
+                                        
+                                    }
                                     allCheakPozizitions(i, colmn);
                                 }
                                 _pasteOrCut = false;
@@ -818,7 +838,13 @@ namespace Planning_Work
                         arrayTable[cutRow, cutColumn]._tema = b._tema;
                         arrayTable[cutRow, cutColumn]._rooms = b._rooms;
                         arrayTable[cutRow, cutColumn]._teacher = b. _teacher;
-                        dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms + " " + cut_Buufer._teacher;
+                        dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
+                        foreach (var item in cut_Buufer._teacher)
+                        {
+                            dataGridView1[colmn, row].Value += " ";
+                            dataGridView1[colmn, row].Value += item;
+
+                        }
                         dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " " + b._teacher;
 
                         allCheakPozizitions(row, colmn);
@@ -835,11 +861,6 @@ namespace Planning_Work
             ColorDataGridAll();
         }
 
-        private void Form2_Load(object sender, EventArgs e)
-        {
-
-        }
-
         bool daysAccept(int frow, int fcolumn, int down)
         {
             if (down == 0)
@@ -847,7 +868,7 @@ namespace Planning_Work
                 return true;
             }
 
-            int fdown = 1, i = 0;
+            int fdown = 0, i = 0;
             while (frow + i <= allRow && (dataGridView1[0, frow + i].Value.ToString() != "" || dataGridView1[0, frow + i + 1].Value.ToString() != ""))
             {
                 fdown++;
@@ -859,8 +880,7 @@ namespace Planning_Work
 
             return true;
         }
-
-
+        
         // Drag and drop
         private void dataGridView1_DragDrop(object sender, DragEventArgs e)
         {
@@ -881,7 +901,7 @@ namespace Planning_Work
                 {
                     if (dataGridView1[hit.ColumnIndex, 3].Value.ToString() == dataGridView1[DragColumn, 3].Value.ToString())
                     {
-                        if (daysAccept(hit.RowIndex, hit.ColumnIndex, up + down)) 
+                        if (daysAccept(hit.RowIndex, hit.ColumnIndex, up + down))
                         {
                             if ((up == 0 && down == 0) || DragAndDrop_chaekPool(hit.RowIndex, hit.ColumnIndex, 0, down + up))
                             {
@@ -928,7 +948,6 @@ namespace Planning_Work
                 {
                     MessageBox.Show("Пожалуйста, запоните для начала ячейку");
                 }
-
             }
             ColorDataGrid();
             VOSKRESENIE();
@@ -1100,7 +1119,7 @@ namespace Planning_Work
             label2.Text = "";
             row = e.RowIndex;
             colmn = e.ColumnIndex;
-            
+            int countCheakDisiplines = 0;
             if (row > -1 && colmn > -1)
             {
                 
@@ -1115,9 +1134,10 @@ namespace Planning_Work
                         {
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
-                               label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
+                                label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
                                 Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
                                 form.ShowDialog();
+                                countCheakDisiplines = form.GetDistance;
                             }
                         }
                         else
@@ -1125,15 +1145,19 @@ namespace Planning_Work
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
                                 label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
-                                Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, arrayTable[e.RowIndex, e.ColumnIndex]._teacher, arrayTable[e.RowIndex, e.ColumnIndex]._rooms, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
+                                Form4 form = new Form4( arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, arrayTable[e.RowIndex, e.ColumnIndex]._teacher, arrayTable[e.RowIndex, e.ColumnIndex]._rooms, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
                                 form.ShowDialog();
+                                countCheakDisiplines = form.GetDistance;
                             }
+                        }
+                        for (int i = row-countCheakDisiplines ; i <= row - countCheakDisiplines + countCheakDisiplines * 2; i++) 
+                        {
+                            allCheakPozizitions(i, colmn);
                         }
                     }
                 }
             }
             
-
         }
 
         public string searchCommentsTems(string nameGroupe,string nameDisiplines, string tems)
@@ -1306,20 +1330,37 @@ namespace Planning_Work
                                 if (dataGridView1[j, fRow].ToolTipText.IndexOf("У вас совпали классы в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n") == -1)
                                     dataGridView1[j, fRow].ToolTipText += "У вас совпали классы в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n";
                             }
-                            if (arrayTable[fRow, j]._teacher == arrayTable[fRow, i]._teacher && j != i && arrayTable[fRow, i]._down != true && arrayTable[fRow, j]._down != true)
+                            
+                            if (arrayTable[fRow, j]._teacher !=  null && arrayTable[fRow, i]._teacher != null && EqualArrTeachers(arrayTable[fRow, j]._teacher, arrayTable[fRow, i]._teacher)>0 && j != i && arrayTable[fRow, i]._down != true && arrayTable[fRow, j]._down != true)
                             {
                                 dataGridView1[j, fRow].Style.ForeColor = colorDialog1.Color;
                                 dataGridView1[i, fRow].Style.ForeColor = colorDialog1.Color;
                                 if (dataGridView1[j, fRow].ToolTipText.IndexOf("У вас совпали преподаватели в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n") == -1)
                                     dataGridView1[j, fRow].ToolTipText += "У вас совпали преподаватели в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n";
                             }
-
                         }
                     }
                 }
+            }
+        }
 
+        //Проверка двух массивов
+        int EqualArrTeachers (string [] arr1, string [] arr2)
+        {
+            int count = 0;
+
+            foreach (var itemsArray1 in arr1)
+            {
+                foreach (var itemsArray2 in arr2)
+                {
+                    if (itemsArray1 == itemsArray2)
+                    {
+                        count++;
+                    }
+                }
             }
 
+            return count;
         }
 
         //Првоерка по вертикали
@@ -1365,14 +1406,11 @@ namespace Planning_Work
                 cheakGorizontal(i);
             }
 
-
-
             cheakVertical(fcolumn);
 
         }
-
-
     }
+
     public struct Tema
     {
         public string _tema;

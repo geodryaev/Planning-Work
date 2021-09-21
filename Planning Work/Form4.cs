@@ -12,7 +12,8 @@ namespace Planning_Work
 {
     public partial class Form4 : Form
     {
-        int countPrepods, pozitionX = 170, pozitionY = 210;
+        int pozitionX = 170, pozitionY = 210;
+        bool chaekFullUp;
         ComboBox[] arr;
         int count_box;
         CellsTable[,] cellsTables;
@@ -23,7 +24,6 @@ namespace Planning_Work
         public Form4(string nameDisciplines, string tem, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
         {
             InitializeComponent();
-            countPrepods = 1;
             cellsTables = _arrayTable;
             dataGridView = dataGridView1;
             ob = e;
@@ -84,7 +84,6 @@ namespace Planning_Work
         public Form4(string nameDisciplines, string tem, string [] teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
         {
             InitializeComponent();
-            countPrepods = 1;
             cellsTables = _arrayTable;
             dataGridView = dataGridView1;
             ob = e;
@@ -101,16 +100,43 @@ namespace Planning_Work
             comboBox1.Items.Add(roomss);
             comboBox2.Items.Add(nameDisciplines);
             comboBox3.Items.Add(tem);
-            //comboBox4.Items.Add(teachh);
-
+            Controls.Remove(comboBox4);
+            
             arr = new ComboBox[4];
             arr[0] = comboBox4;
-            count_box = 1;
-            arr = new ComboBox[teachh.Length];
-
+            count_box = 0;
+            pozitionY -= 45;
+            int countTeachForArray = 0;
             foreach (var item in teachh)
             {
                 arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name = Convert.ToString(count_box) };
+                Controls.Add(arr[count_box]);
+                arr[count_box].Items.Add(teachh[countTeachForArray]);
+                arr[count_box].SelectedIndex = 0;
+                countTeachForArray++;
+
+                if (searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe) == -1)
+                {
+                    for (int i = 0; i < saveTeacher._array.Length; i++)
+                    {
+                        if (saveTeacher._array[i]._nameDisiplines == saveDisiplines && saveTeacher._array[i]._numberGroupe == saveNameGroupe)
+                        {
+                            for (int j = 0; j < saveTeacher._array[i]._teachers.Length; j++)
+                            {
+                                arr[count_box].Items.Add(saveTeacher._array[i]._teachers[j]);
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    int count = searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe);
+                    for (int i = 0; i < saveTeacher._array[count]._teachers.Length; i++)
+                    {
+                        arr[count_box].Items.Add(saveTeacher._array[count]._teachers[i]);
+                    }
+                }
                 pozitionY += 45;
                 count_box++;
             }
@@ -118,7 +144,6 @@ namespace Planning_Work
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
-            //comboBox4.SelectedIndex = 0;
 
             for (int i = 0; i < clas._array.Length; i++)
             {
@@ -152,12 +177,27 @@ namespace Planning_Work
         //OK
         private void button1_Click(object sender, EventArgs e)
         {
-            if (comboBox1.Text != "" && comboBox2.Text != "" && comboBox3.Text != "" && comboBox4.Text != "" )
+            chaekFullUp = true;
+            if (comboBox1.Text != "" && comboBox2.Text != "" && comboBox3.Text != "" )
             {
-                int up = countUp(), down = countDown();
+                foreach (var item in arr)
+                {
+                    if (item != null && item.Text == "")
+                    {
+                        chaekFullUp = false;
+                    }
+                }
 
-                set(up, down);
-                Close();
+                if (chaekFullUp)
+                {
+                    int up = countUp(), down = countDown();
+                    set(up, down);
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show("Пожалуйста заполните все поля ввода");
+                }
             }
             else
             {
@@ -166,6 +206,11 @@ namespace Planning_Work
             
         }
 
+
+        public int GetDistance
+        {
+            get { return countUp() + countDown(); }
+        }
         //OTMEHA
         private void button2_Click(object sender, EventArgs e)
         {
@@ -256,7 +301,7 @@ namespace Planning_Work
         {
             if (count_box <= 3)
             {
-                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name =  Convert.ToString(count_box)};
+                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name = Convert.ToString(count_box) };
                 Controls.Add(arr[count_box]);
 
                 if (searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe) == -1)
@@ -283,7 +328,7 @@ namespace Planning_Work
                 }
                 count_box++;
                 pozitionY += 45;
-                
+
             }
         }
     }
