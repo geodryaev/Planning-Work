@@ -114,7 +114,7 @@ namespace Planning_Work
                 dataGridView1.AllowDrop = true;
                 ColorDataGrid();
                 VOSKRESENIE();
-                getAlllogical();
+                getAlllogical();//Запись буферных зон (Что бы ты еблан не искал потом 1 милион лет)
             }
             else
             {
@@ -854,7 +854,6 @@ namespace Planning_Work
                         button9.BackgroundImage = Properties.Resources.cut_105155;
                     }
                 }
-
             }
             ColorDataGrid();
             VOSKRESENIE();
@@ -942,7 +941,6 @@ namespace Planning_Work
                     {
                         MessageBox.Show("Вы пытаетесь вставить пары из группы " + dataGridView1[hit.ColumnIndex, 3].Value + " в группу " + dataGridView1[DragColumn, 3].Value);
                     }
-
                 }
                 else
                 {
@@ -1288,24 +1286,21 @@ namespace Planning_Work
             int numberGroup;
             for (int count = 0; count < allColumn; count++)
             {
-
                 if (arrayTable[1, count]._down == true)
                 {
                     int countRow = 5;
                     numberGroup = searchGroup(dataGridView1[count, 3].Value.ToString());
                     for (int i = 0; i < lessons[numberGroup]._arrayLesson.Length; i++)
                     {
-                        if (lessons[numberGroup] != null)
+                        int countHour = Convert.ToInt32(lessons[numberGroup]._arrayLesson[i]._time);
+                        
+                        while (countHour > 0)
                         {
-                            int countHour = Convert.ToInt32(lessons[numberGroup]._arrayLesson[i]._time);
-                            while (countHour > 0)
-                            {
-                                dataGridView1[count, countRow].Value = lessons[numberGroup]._arrayLesson[i]._nameDiscipline + " " + lessons[numberGroup]._arrayLesson[i]._tema;
-                                arrayTable[countRow, count]._disiplines = lessons[numberGroup]._arrayLesson[i]._nameDiscipline;
-                                arrayTable[countRow, count]._tema = lessons[numberGroup]._arrayLesson[i]._tema;
-                                countRow++;
-                                countHour -= 2;
-                            }
+                            dataGridView1[count, countRow].Value = lessons[numberGroup]._arrayLesson[i]._nameDiscipline + " " + lessons[numberGroup]._arrayLesson[i]._tema;
+                            arrayTable[countRow, count]._disiplines = lessons[numberGroup]._arrayLesson[i]._nameDiscipline;
+                            arrayTable[countRow, count]._tema = lessons[numberGroup]._arrayLesson[i]._tema;
+                            countRow++;
+                            countHour -= 2;
                         }
                     }
                 }

@@ -40,7 +40,6 @@ namespace Planning_Work
         Teacher teacher;
         int countAllLessons = 0;
         int Kastil1 = 0;
-        
         KMA clas = new KMA(); 
         AllLessinAndRooms AllLessinRooms = new AllLessinAndRooms();
 
@@ -75,7 +74,6 @@ namespace Planning_Work
                     Excel.Application App;
                     Excel.Workbook xlsWB;
                     Excel.Worksheet xlsSheet;
-                    
 
                     App = new Excel.Application();
                     xlsWB = App.Workbooks.Open(@pathFile);
@@ -170,7 +168,6 @@ namespace Planning_Work
                 //открытие книги
                 if (ItsExsel(pathFile))
                 {
-
                     Excel.Application App;
                     Excel.Workbook xlsWB;
                     Excel.Worksheet xlsSheet;
@@ -180,21 +177,12 @@ namespace Planning_Work
                     xlsWB = App.Workbooks.Open(@pathFile);
                     xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
 
-                    
                     int countWorksheets = xlsWB.Worksheets.Count;
-                    int count=0;
-                    for (int numberPage = 1; numberPage <= countWorksheets; numberPage++)
-                    {
-                        xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(numberPage);
-                        count += countGroupForTeacher(xlsSheet);
-                    }
-                    teacher = new Teacher();
-                    for (int numberPage = 1; numberPage <= countWorksheets; numberPage++)
-                    {
-                        xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(numberPage);
-                        getGoodMan(xlsSheet);
-                    }
                     
+                    teacher = new Teacher();
+                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+                    getGoodMan(xlsSheet);
+
                     xlsWB.Save();
                     xlsWB.Close(true);
                     App.Quit();
@@ -989,68 +977,58 @@ namespace Planning_Work
 
         public void getGoodMan (Excel.Worksheet shteet)
         {
-            int column = 1;
-            int row = 1;
+            int row = 2, column = 6, space =0;
             int countGroup = countGroupForTeacher(shteet);
-            column = 1;            
-            for (int i = 0; i < countGroup; i++) 
+            for (int i = 6; i < countGroup+column; i++)
             {
-                while (shteet.Cells[row, column].Text() != "")
+                row = 4;
+                while (shteet.Cells[row,3].Text().Trim() != "")
                 {
-                    row = 3;
-                    while (shteet.Cells[row,column].Text() != "")
-                    {
-                        teacher.push(shteet.Cells[1, column].Text(), shteet.Cells[row, column].Text(), shteet.Cells[row + 1, column].Text(), TeacherFromString(shteet.Cells[row + 2, column].Text()));
-                        row += 3;
-                    }
-                    row = 1;
-                    column++;
+                    teacher.push(shteet.Cells[2, i].Text(), shteet.Cells[row, 3].Text(), TeacherFromString(shteet, row, i, ref space));
+                    row += space;
                 }
             }
         }
 
-        public string [] TeacherFromString (string str)
+        public string [] TeacherFromString (Excel.Worksheet shteet, int row, int column, ref int countSpace)
         {
-            
-            str = str.Trim();
-            str = Regex.Replace(str, @"\s+", " ");
-            int count = 1;
-            for (int i = 0; i < str.Length; i++)
+            int space = 1, startRow = row, countTeacher = 0;
+            while (shteet.Cells[row, 3].Text() == shteet.Cells[row + 1, 3].Text())
             {
-                if (str [i] == ' ')
-                {
-                    count++;
-                }
-                
+                space++;
+                row++;
             }
-            
-            string[] answer = new string[count];
-            count = 0;
 
-            for (int i = 0; i < str.Length; i++)
+            row = startRow;
+            countSpace = space;
+            for (int i = 0; i < space; i++)
             {
-                string buffer = "";
-                while (i < str.Length && str[i] != ' ')
+                if (shteet.Cells[row+i, column].Text() != "")
                 {
-                    buffer += str[i];
-                    i++;
+                    countTeacher++;
                 }
-                answer[count] = buffer;
-                count++;
             }
+            string[] answer = new string[countTeacher];
+            for (int i = 0; i < countTeacher; i++) 
+            {
+                answer[i] = shteet.Cells[row+i, column].Text().Trim();
+            }
+
+
             return answer;
         }
 
         public int countGroupForTeacher (Excel.Worksheet shteet)
         {
-            int column = 1;
-            int row = 1;
+            int column = 6;
+            int row = 2;
             int countGroup = 0;
             while (shteet.Cells[row, column].Text != "")
             {
                 countGroup++;
                 column++;
             }
+
             return countGroup;
         }
 
@@ -1424,6 +1402,20 @@ namespace Planning_Work
             answer[_count]._nameDisiplines = nameDisiplines;
             answer[_count]._numberGroupe = numberGroupe;
             answer[_count]._tems = tems;
+            answer[_count]._teachers = teachers;
+            _array = answer;
+            _count++;
+        }
+        public void push(string numberGroupe, string nameDisiplines, string[] teachers)
+        {
+            GroupeTeacher[] answer = new GroupeTeacher[_count + 1];
+            for (int i = 0; i < _count; i++)
+            {
+                answer[i] = _array[i];
+            }
+            answer[_count]._nameDisiplines = nameDisiplines;
+            answer[_count]._numberGroupe = numberGroupe;
+            answer[_count]._tems = "0";
             answer[_count]._teachers = teachers;
             _array = answer;
             _count++;
