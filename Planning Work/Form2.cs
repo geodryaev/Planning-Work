@@ -46,6 +46,8 @@ namespace Planning_Work
                 clas = GetAllRoomsForSQL();
                 people = GetPeopleForSQL();
                 teacher = GetTeacherForSQL();
+                clas.countGroupe();
+
 
                 InitializeComponent();
                 label2.MaximumSize = new Size(200,800);
@@ -60,14 +62,11 @@ namespace Planning_Work
                 time = times;
                 countFile = countUploadFile;
 
-
                 countFirst = people.BigBoss() * 2;
                 countTwo = people.BigBoss() * 2;
                 countTree = people.BigBoss() * 2;
                 countFour = people.BigBoss() * 2;
                 countFive = people.BigBoss() * 2;
-
-
 
                 arrayTable = new CellsTable[allRow + 1, allColumn + 1];
                 for (int i = 0; i < allColumn; i++)
@@ -264,7 +263,7 @@ namespace Planning_Work
                     {
                         while (read.Read())
                         {
-                            answer.pushGPSQL(Convert.ToString(read.GetValue(2)), Convert.ToString(read.GetValue(1)));
+                            answer.pushGPSQL(Convert.ToString(read.GetValue(2)), Convert.ToString(read.GetValue(1)), Convert.ToString(read.GetValue(3)));
                         }
                     }
                 }
@@ -1133,7 +1132,7 @@ namespace Planning_Work
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
                                 label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
-                                Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
+                                Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1, dataGridView1[e.ColumnIndex,4].Value.ToString());
                                 form.ShowDialog();
                                 countCheakDisiplines = form.GetDistance;
                             }
@@ -1143,7 +1142,7 @@ namespace Planning_Work
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
                                 label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
-                                Form4 form = new Form4( arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, arrayTable[e.RowIndex, e.ColumnIndex]._teacher, arrayTable[e.RowIndex, e.ColumnIndex]._rooms, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1);
+                                Form4 form = new Form4( arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, arrayTable[e.RowIndex, e.ColumnIndex]._teacher, arrayTable[e.RowIndex, e.ColumnIndex]._rooms, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1, dataGridView1[e.ColumnIndex, 4].Value.ToString());
                                 form.ShowDialog();
                                 countCheakDisiplines = form.GetDistance;
                             }
@@ -1283,6 +1282,8 @@ namespace Planning_Work
         //Глобалка
         public void getAlllogical()
         {
+            string buffClass = "";
+            string [] buufTeachFB = new string[0];
             int numberGroup;
             for (int count = 0; count < allColumn; count++)
             {
@@ -1293,12 +1294,24 @@ namespace Planning_Work
                     for (int i = 0; i < lessons[numberGroup]._arrayLesson.Length; i++)
                     {
                         int countHour = Convert.ToInt32(lessons[numberGroup]._arrayLesson[i]._time);
-                        
+
                         while (countHour > 0)
                         {
                             dataGridView1[count, countRow].Value = lessons[numberGroup]._arrayLesson[i]._nameDiscipline + " " + lessons[numberGroup]._arrayLesson[i]._tema;
                             arrayTable[countRow, count]._disiplines = lessons[numberGroup]._arrayLesson[i]._nameDiscipline;
                             arrayTable[countRow, count]._tema = lessons[numberGroup]._arrayLesson[i]._tema;
+                            if (countRoomsFB(lessons[numberGroup]._arrayLesson[i]._nameDiscipline, dataGridView1[count, 3].Value.ToString(), lessons[numberGroup]._arrayLesson[i]._tema,ref buffClass) == 1)
+                            {
+                                arrayTable[countRow, count]._rooms = buffClass;
+                                dataGridView1[count, countRow].Value = dataGridView1[count, countRow].Value + " " + buffClass;
+                            }
+                            
+                            
+                            if (countPrepodsFB (lessons[numberGroup]._arrayLesson[i]._nameDiscipline, dataGridView1[count, 3].Value.ToString(), lessons[numberGroup]._arrayLesson[i]._tema, ref buufTeachFB) ==1)
+                            {
+                                arrayTable[countRow, count]._teacher = buufTeachFB;
+                                dataGridView1[count, countRow].Value = dataGridView1[count, countRow].Value + " " + buufTeachFB[0];
+                            }
                             countRow++;
                             countHour -= 2;
                         }
@@ -1306,6 +1319,44 @@ namespace Planning_Work
                 }
             }
         }
+        //Проверка на преподов
+        public int countPrepodsFB (string nameDisiplines, string numberGroupe, string teme, ref string[] buffTeach)
+        {
+            buffTeach = new string[1];
+            for (int i = 0; i < teacher._array.Length;i++)
+            {
+                if (teacher._array[i]._nameDisiplines == nameDisiplines && teacher._array[i]._numberGroupe == numberGroupe)
+                {
+                    if (teacher._array[i]._teachers.Length == 1)
+                        buffTeach = teacher._array[i]._teachers;
+                    return teacher._array[i]._teachers.Length;
+                }
+            }
+
+            return -1;
+        }
+        public int countRoomsFB(string nameDisiplines, string numberGroupe, string teme, ref string buffClass)
+        {
+            bool myCheakDead = false;
+            for (int i = 0; i < teacher._array.Length; i++)
+            {
+                if (clas._array[i].numberGroupe == numberGroupe && clas._array[i].AllLessin == nameDisiplines)
+                {
+                    if (!myCheakDead)
+                    {
+                        buffClass = clas._array[i].rooms;
+                        myCheakDead = true;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            return 1;
+        }
+
+
 
         //Проверка по горизонтали
         public void cheakGorizontal(int fRow)

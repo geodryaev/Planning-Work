@@ -19,9 +19,9 @@ namespace Planning_Work
         CellsTable[,] cellsTables;
         DataGridViewCellEventArgs ob;
         DataGridView dataGridView;
-        string saveTem, saveDisiplines, saveNameGroupe;
+        string saveTem, saveDisiplines, saveNameGroupe, numberGroopRoom;
         Teacher saveTeacher;
-        public Form4(string nameDisciplines, string tem, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
+        public Form4(string nameDisciplines, string tem, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1, string numberRoomsGroupe)
         {
             InitializeComponent();
             cellsTables = _arrayTable;
@@ -32,6 +32,7 @@ namespace Planning_Work
             saveTeacher = teacher;
             saveDisiplines = nameDisciplines;
             saveNameGroupe = nameGroupe;
+            numberGroopRoom = numberRoomsGroupe;
 
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;//Класс
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;//Имя предмета
@@ -46,13 +47,13 @@ namespace Planning_Work
             comboBox3.Items.Add(tem);
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
-            
+
+            comboBox1.Items.Add(numberGroopRoom);
             for (int i = 0;  i< clas._array.Length; i++)
             {
-                if (clas._array[i].AllLessin == nameDisciplines)
+                if (clas._array[i].AllLessin == nameDisciplines && clas._array[i].numberGroupe == saveNameGroupe)
                     comboBox1.Items.Add(clas._array[i].rooms);
             }
-
 
 
             if (searchTem(teacher, tem, nameDisciplines, nameGroupe) == -1)
@@ -66,7 +67,6 @@ namespace Planning_Work
                             comboBox4.Items.Add(teacher._array[i]._teachers[j]);
                         }
                     }
-
                 }
             }
             else
@@ -77,11 +77,9 @@ namespace Planning_Work
                     comboBox4.Items.Add(teacher._array[count]._teachers[i]);
                 }
             }
-            
-            
         }
 
-        public Form4(string nameDisciplines, string tem, string [] teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1)
+        public Form4(string nameDisciplines, string tem, string [] teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1, string numberRoomsGroupe)
         {
             InitializeComponent();
             cellsTables = _arrayTable;
@@ -91,13 +89,18 @@ namespace Planning_Work
             saveTeacher = teacher;
             saveDisiplines = nameDisciplines;
             saveNameGroupe = nameGroupe;
+            numberGroopRoom = numberRoomsGroupe;
 
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;//Класс
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;//Имя предмета
             comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;//Тип
             comboBox4.DropDownStyle = ComboBoxStyle.DropDownList;//Имя преподавателя
 
-            comboBox1.Items.Add(roomss);
+            if (roomss != null)
+            {
+                comboBox1.Items.Add(roomss);
+
+            }
             comboBox2.Items.Add(nameDisciplines);
             comboBox3.Items.Add(tem);
             Controls.Remove(comboBox4);
@@ -141,13 +144,19 @@ namespace Planning_Work
                 count_box++;
             }
 
-            comboBox1.SelectedIndex = 0;
+
+            if (roomss != null)
+            {
+                comboBox1.SelectedIndex = 0;
+            }
+
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
 
+            comboBox1.Items.Add(numberGroopRoom);
             for (int i = 0; i < clas._array.Length; i++)
             {
-                if (clas._array[i].AllLessin == nameDisciplines)
+                if (clas._array[i].AllLessin == nameDisciplines && clas._array[i].numberGroupe == saveNameGroupe)   
                     comboBox1.Items.Add(clas._array[i].rooms);
             }
 
@@ -265,6 +274,7 @@ namespace Planning_Work
             if(count_box - 1 >= 1)
             {
                 Controls.Remove(arr[count_box - 1]);
+                arr[count_box - 1] = null;
                 count_box--;
                 pozitionY -= 45;
             }

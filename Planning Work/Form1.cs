@@ -341,14 +341,14 @@ namespace Planning_Work
                     connection.Open();
                     if (Dont_createTable == false)
                     {
-                        using (var cmd = new SqlCommand("CREATE TABLE _class ( ID int NOT NULL IDENTITY(1,1) primary key, name NVARCHAR(MAX),  room NVARCHAR(MAX))", connection))
+                        using (var cmd = new SqlCommand("CREATE TABLE _class ( ID int NOT NULL IDENTITY(1,1) primary key, name NVARCHAR(MAX),  room NVARCHAR(MAX), groupe NVARCHAR(MAX))", connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
                     }
                     else
                     {
-                        using (var cmd = new SqlCommand("DROP TABLE _class; \n CREATE TABLE _class ( ID int NOT NULL IDENTITY(1,1) primary key, name NVARCHAR(MAX),  room NVARCHAR(MAX))", connection))
+                        using (var cmd = new SqlCommand("DROP TABLE _class; \n CREATE TABLE _class ( ID int NOT NULL IDENTITY(1,1) primary key, name NVARCHAR(MAX),  room NVARCHAR(MAX), groupe NVARCHAR(MAX))", connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
@@ -441,8 +441,8 @@ namespace Planning_Work
 
                 for (int i = 0; i < AllLessinRooms._array.Length; i++)
                 {
-                    string sqlComandForSetData = "INSERT INTO _class (name, room) VALUES";
-                    sqlComandForSetData += " (\'" + AllLessinRooms._array[i].AllLessin.Trim() + "\', \'" + AllLessinRooms._array[i].rooms.Trim() + "\')";
+                    string sqlComandForSetData = "INSERT INTO _class (name, room, groupe) VALUES";
+                    sqlComandForSetData += " (\'" + AllLessinRooms._array[i].AllLessin.Trim() + "\', \'" + AllLessinRooms._array[i].rooms.Trim()  + "\', \'" + AllLessinRooms._array[i].numberGroupe.Trim() + "\')";
                     connection.Open();
                     using (var cmd = new SqlCommand(sqlComandForSetData, connection))
                     {
@@ -1129,17 +1129,20 @@ namespace Planning_Work
         void getGP(Excel.Worksheet shteet)
         {
 
-            AllLessinRooms.setCountArray(countGP(shteet));
-            int row = 2, column = 2;
-            while (shteet.Cells[row, column].Text() != "")
+            AllLessinRooms.setCountArray(0);
+            int row, column = 6;
+            while (shteet.Cells[2,column].Text() != "")
             {
-                int name = 2;
-                while (shteet.Cells[row + 1, column].Text() != "")
+                row = 5;
+                AllLessinRooms.pushGPSQL(shteet.Cells[3, column].Text(), shteet.Cells[2, column].Text(), shteet.Cells[2, column].Text());
+                while (shteet.Cells[row,3].Text() != "")
                 {
-                    AllLessinRooms.pushGP(shteet.Cells[row + 1, column].Text(), shteet.Cells[name, column].Text());
+                    if(shteet.Cells[row,column].Text() != "")
+                    {
+                        AllLessinRooms.pushGPSQL(shteet.Cells[row, column].Text(), shteet.Cells[row, 3].Text(), shteet.Cells[2, column].Text());
+                    }
                     row++;
                 }
-                row = name;
                 column++;
             }
 
@@ -1205,6 +1208,7 @@ namespace Planning_Work
     }
     public struct AllLessinRomms
     {
+        public string numberGroupe;
         public string rooms;
         public string AllLessin;
     }
@@ -1456,6 +1460,18 @@ namespace Planning_Work
         }
 
     }
+    public struct normalMe
+    {
+        public string _groupe;
+        public helpnormal[] _array;
+    }
+    public struct helpnormal
+    {
+        public string _rooms;
+        public string _disiplines;
+    }
+
+
     public class AllLessinAndRooms
     {
         public AllLessinRomms[] _array;
@@ -1467,7 +1483,7 @@ namespace Planning_Work
             _array = new AllLessinRomms[0];
         }
 
-        public void pushGPSQL(string room, string name)
+        public void pushGPSQL(string room, string name, string nameGroupe)
         {
             AllLessinRomms [] buffer = new AllLessinRomms[_number + 1];
             for(int i =0; i < _array.Length; i++)
@@ -1476,18 +1492,39 @@ namespace Planning_Work
             }
             buffer[_number].rooms = room;
             buffer[_number].AllLessin = name;
+            buffer[_number].numberGroupe = nameGroupe;
             _number++;
             _array = buffer;
 
         }
 
-        public void pushGP(string room, string AllLessin)
+        public void pushGP(string room, string AllLessin, string nameGroupe)
         {
+            _array[_number].numberGroupe = nameGroupe;
             _array[_number].AllLessin = AllLessin;
             _array[_number].rooms = room;
             _number++;
         }
 
+        public void convertNew ()
+        {
+        }
+
+        public int countGroupe()
+        {
+            int count = 1;
+            string buffer = _array[0].numberGroupe;
+            foreach (var i in _array)
+            {
+                if (buffer != i.numberGroupe)
+                {
+                    count++;
+                    buffer = i.numberGroupe;
+                }
+            }
+
+            return count;
+        }
         public void setCountArray(int count)
         {
             _array = new AllLessinRomms[count];
