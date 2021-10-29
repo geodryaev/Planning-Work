@@ -58,98 +58,11 @@ namespace Planning_Work
             form.ShowDialog();
             
         }
-        //-----------------------------------Добавить таблицу в базу данных
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        //-----------------------------------Создание таблицы
-        private void button2_Click(object sender, EventArgs e)
-        {
-            string pathFile = "";
-
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                pathFile = saveFileDialog1.FileName;
-
-
-                Excel.Application App;
-                Excel.Workbook xlsWB;
-                Excel.Worksheet xlsSheet;
-
-                App = new Excel.Application();
-                xlsWB = App.Workbooks.Add();
-                xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-
-                App = new Excel.Application();
-
-
-                int ch = 0;
-                int num = 3;
-               
-                for (int i = 0; i< baseItem._count;)
-                {
-                    createOneTemplate(ref xlsSheet, ch, num);
-                    setAllLessin(ref xlsSheet, ref ch, ref num, baseItem, ref i);
-                }
-                xlsWB.SaveAs(pathFile);
-                xlsWB.Close(true);
-                App.Quit();
-            }
-        }
-
-        //-----------------------------------Добавление преподавателей
-        private void button4_Click(object sender, EventArgs e)
-        {
-
-        }
         
         //-----------------------------------Очистка памяти
         private void button3_Click(object sender, EventArgs e)
         {
             ClearMSQLtableSave();
-        }
-
-        //-----------------------------------Крепление классов и предметов
-        private void button5_Click(object sender, EventArgs e)
-        {
-            string pathFile = "";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                pathFile = openFileDialog1.FileName;
-
-
-                //открытие книги
-                if (ItsExsel(pathFile))
-                {
-
-                    Excel.Application App;
-                    Excel.Workbook xlsWB;
-                    Excel.Worksheet xlsSheet;
-
-
-                    App = new Excel.Application();
-                    xlsWB = App.Workbooks.Open(@pathFile);
-                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-
-                    PKP(xlsSheet);
-                    xlsWB.Save();
-                    xlsWB.Close(true);
-                    App.Quit();
-                }
-                else
-                {
-                    MessageBox.Show("Выбраный файл не является Excel");
-                }
-            }
-        }
-
-        //-----------------------------------Приязка групп и классов
-        private void button6_Click(object sender, EventArgs e)
-        {
-           
         }
 
         private void button2_Click_1(object sender, EventArgs e)

@@ -77,7 +77,7 @@ namespace Planning_Work
             }
         }
 
-        public Form4(string nameDisciplines, string tem, string [] teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1, string numberRoomsGroupe)
+        public Form4(string nameDisciplines, string tem, string[] teachh, string roomss, ref CellsTable[,] _arrayTable, ref object sender, ref DataGridViewCellEventArgs e, AllLessinAndRooms clas, Teacher teacher, string nameGroupe, ref DataGridView dataGridView1, string numberRoomsGroupe)
         {
             InitializeComponent();
             cellsTables = _arrayTable;
@@ -97,51 +97,56 @@ namespace Planning_Work
             if (roomss != null)
             {
                 comboBox1.Items.Add(roomss);
-
             }
             comboBox2.Items.Add(nameDisciplines);
             comboBox3.Items.Add(tem);
-            Controls.Remove(comboBox4);
-            
+
+
             arr = new ComboBox[4];
             arr[0] = comboBox4;
             count_box = 0;
             pozitionY -= 45;
             int countTeachForArray = 0;
-            foreach (var item in teachh)
+            if (teachh != null && teachh.Length > 0)
             {
-                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDown, Name = Convert.ToString(count_box) };
-                Controls.Add(arr[count_box]);
-                arr[count_box].Items.Add(teachh[countTeachForArray]);
-                arr[count_box].SelectedIndex = 0;
-                countTeachForArray++;
-
-                if (searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe) == -1)
+                foreach (var item in teachh)
                 {
-                    for (int i = 0; i < saveTeacher._array.Length; i++)
+                    Controls.Remove(comboBox4);
+                    arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDown, Name = Convert.ToString(count_box) };
+                    Controls.Add(arr[count_box]);
+                    arr[count_box].Items.Add(teachh[countTeachForArray]);
+                    arr[count_box].SelectedIndex = 0;
+                    countTeachForArray++;
+
+                    if (searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe) == -1)
                     {
-                        if (saveTeacher._array[i]._nameDisiplines == saveDisiplines && saveTeacher._array[i]._numberGroupe == saveNameGroupe)
+                        for (int i = 0; i < saveTeacher._array.Length; i++)
                         {
-                            for (int j = 0; j < saveTeacher._array[i]._teachers.Length; j++)
+                            if (saveTeacher._array[i]._nameDisiplines == saveDisiplines && saveTeacher._array[i]._numberGroupe == saveNameGroupe)
                             {
-                                arr[count_box].Items.Add(saveTeacher._array[i]._teachers[j]);
+                                for (int j = 0; j < saveTeacher._array[i]._teachers.Length; j++)
+                                {
+                                    arr[count_box].Items.Add(saveTeacher._array[i]._teachers[j]);
+                                }
                             }
                         }
-
                     }
-                }
-                else
-                {
-                    int count = searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe);
-                    for (int i = 0; i < saveTeacher._array[count]._teachers.Length; i++)
+                    else
                     {
-                        arr[count_box].Items.Add(saveTeacher._array[count]._teachers[i]);
+                        int count = searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe);
+                        for (int i = 0; i < saveTeacher._array[count]._teachers.Length; i++)
+                        {
+                            arr[count_box].Items.Add(saveTeacher._array[count]._teachers[i]);
+                        }
                     }
+                    pozitionY += 45;
+                    count_box++;
                 }
-                pozitionY += 45;
-                count_box++;
             }
-
+            else
+            {
+                count_box = 1;
+            }
 
             if (roomss != null)
             {
@@ -212,7 +217,6 @@ namespace Planning_Work
             }
             
         }
-
 
         public int GetDistance
         {
@@ -289,7 +293,7 @@ namespace Planning_Work
                 paxaSexs = new string[count_box];
                 cellsTables[i, column]._disiplines = comboBox2.Text;
                 cellsTables[i, column]._rooms = comboBox1.Text.Trim();
-                for (int j =0; j < count_box;j++)
+                for (int j = 0; j < count_box; j++) 
                 {
                     paxaSexs[j] = arr[j].Text.Trim();
                 }

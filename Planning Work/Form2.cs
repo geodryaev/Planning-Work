@@ -1145,68 +1145,76 @@ namespace Planning_Work
                 }
                 else
                 {
-                    if (cutCount != 1)
+                    if (dataGridView1[cutColumn,3].Value.ToString() == dataGridView1[colmn, 3].Value.ToString())
                     {
-                        if (daysAccept(row, cutColumn, cutCount-1))
+                        if (cutCount != 1)
                         {
-                            if (DragAndDrop_chaekPool(row, colmn, 0, cutCount-1))
+                            if (daysAccept(row, cutColumn, cutCount - 1))
                             {
-                                for (int i = row; i < row + cutCount; i++)
+                                if (DragAndDrop_chaekPool(row, colmn, 0, cutCount - 1))
                                 {
-                                    arrayTable[i, colmn]._disiplines = cut_Buufer._disiplines;
-                                    arrayTable[i, colmn]._teacher = cut_Buufer._teacher;
-                                    arrayTable[i, colmn]._tema = cut_Buufer._tema;
-                                    arrayTable[i, colmn]._rooms = cut_Buufer._rooms;
-                                    
-                                    dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
-                                    foreach (var item in cut_Buufer._teacher)
+                                    for (int i = row; i < row + cutCount; i++)
                                     {
-                                        dataGridView1[colmn, i].Value += " ";
-                                        dataGridView1[colmn, i].Value += item;
-                                        
+                                        arrayTable[i, colmn]._disiplines = cut_Buufer._disiplines;
+                                        arrayTable[i, colmn]._teacher = cut_Buufer._teacher;
+                                        arrayTable[i, colmn]._tema = cut_Buufer._tema;
+                                        arrayTable[i, colmn]._rooms = cut_Buufer._rooms;
+
+                                        dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
+                                        foreach (var item in cut_Buufer._teacher)
+                                        {
+                                            dataGridView1[colmn, i].Value += " ";
+                                            dataGridView1[colmn, i].Value += item;
+
+                                        }
+                                        allCheakPozizitions(i, colmn);
                                     }
-                                    allCheakPozizitions(i, colmn);
+                                    _pasteOrCut = false;
+                                    button9.BackgroundImage = Properties.Resources.cut_105155;
                                 }
-                                _pasteOrCut = false;
-                                button9.BackgroundImage = Properties.Resources.cut_105155;
+                                else
+                                {
+                                    MessageBox.Show("Нехватает места для вставки данной пары");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Нехватает места для вставки данной пары");
+                                MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
                             }
+
                         }
                         else
                         {
-                            MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
-                        }
+                            CellsTable b = arrayTable[row, colmn];
+                            arrayTable[row, colmn]._disiplines = cut_Buufer._disiplines;
+                            arrayTable[row, colmn]._tema = cut_Buufer._tema;
+                            arrayTable[row, colmn]._teacher = cut_Buufer._teacher;
+                            arrayTable[row, colmn]._rooms = cut_Buufer._rooms;
+                            arrayTable[cutRow, cutColumn]._disiplines = b._disiplines;
+                            arrayTable[cutRow, cutColumn]._tema = b._tema;
+                            arrayTable[cutRow, cutColumn]._rooms = b._rooms;
+                            arrayTable[cutRow, cutColumn]._teacher = b._teacher;
+                            dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
+                            foreach (var item in cut_Buufer._teacher)
+                            {
+                                dataGridView1[colmn, row].Value += " ";
+                                dataGridView1[colmn, row].Value += item;
 
+                            }
+                            dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " " + b._teacher;
+
+                            allCheakPozizitions(row, colmn);
+                            allCheakPozizitions(cutRow, cutColumn);
+
+                            _pasteOrCut = false;
+                            button9.BackgroundImage = Properties.Resources.cut_105155;
+                        }
                     }
                     else
                     {
-                        CellsTable b = arrayTable[row, colmn];
-                        arrayTable[row, colmn]._disiplines = cut_Buufer._disiplines;
-                        arrayTable[row, colmn]._tema = cut_Buufer._tema;
-                        arrayTable[row, colmn]._teacher = cut_Buufer._teacher;
-                        arrayTable[row, colmn]._rooms = cut_Buufer._rooms;
-                        arrayTable[cutRow, cutColumn]._disiplines = b._disiplines;
-                        arrayTable[cutRow, cutColumn]._tema = b._tema;
-                        arrayTable[cutRow, cutColumn]._rooms = b._rooms;
-                        arrayTable[cutRow, cutColumn]._teacher = b. _teacher;
-                        dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
-                        foreach (var item in cut_Buufer._teacher)
-                        {
-                            dataGridView1[colmn, row].Value += " ";
-                            dataGridView1[colmn, row].Value += item;
-
-                        }
-                        dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " " + b._teacher;
-
-                        allCheakPozizitions(row, colmn);
-                        allCheakPozizitions(cutRow, cutColumn);
-
-                        _pasteOrCut = false;
-                        button9.BackgroundImage = Properties.Resources.cut_105155;
+                        MessageBox.Show("Вы пытаетесь вставить пару не в ту группу \n Нужно поставить в группу " );
                     }
+                    
                 }
             }
             ColorDataGrid();
