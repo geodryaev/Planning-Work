@@ -34,10 +34,10 @@ namespace Planning_Work
             saveNameGroupe = nameGroupe;
             numberGroopRoom = numberRoomsGroupe;
 
-            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;//Класс
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDown;//Класс
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;//Имя предмета
             comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;//Тип
-            comboBox4.DropDownStyle = ComboBoxStyle.DropDownList;//Имя преподавателя
+            comboBox4.DropDownStyle = ComboBoxStyle.DropDown;//Имя преподавателя
             arr = new ComboBox[4];
             count_box = 1;
             arr[0] = comboBox4;
@@ -54,8 +54,6 @@ namespace Planning_Work
                 if (clas._array[i].AllLessin == nameDisciplines && clas._array[i].numberGroupe == saveNameGroupe)
                     comboBox1.Items.Add(clas._array[i].rooms);
             }
-
-
             if (searchTem(teacher, tem, nameDisciplines, nameGroupe) == -1)
             {
                 for (int i = 0; i < teacher._array.Length; i++)
@@ -91,10 +89,10 @@ namespace Planning_Work
             saveNameGroupe = nameGroupe;
             numberGroopRoom = numberRoomsGroupe;
 
-            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;//Класс
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDown;//Класс
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;//Имя предмета
             comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;//Тип
-            comboBox4.DropDownStyle = ComboBoxStyle.DropDownList;//Имя преподавателя
+            comboBox4.DropDownStyle = ComboBoxStyle.DropDown;//Имя преподавателя
 
             if (roomss != null)
             {
@@ -112,7 +110,7 @@ namespace Planning_Work
             int countTeachForArray = 0;
             foreach (var item in teachh)
             {
-                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name = Convert.ToString(count_box) };
+                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDown, Name = Convert.ToString(count_box) };
                 Controls.Add(arr[count_box]);
                 arr[count_box].Items.Add(teachh[countTeachForArray]);
                 arr[count_box].SelectedIndex = 0;
@@ -285,24 +283,24 @@ namespace Planning_Work
             string boba = "";
             string[] paxaSexs = new string [count_box];
             int row = ob.RowIndex, column = ob.ColumnIndex;
-            for (int i = row - up; i <= row+down;i++ )
+            for (int i = row - up; i <= row + down; i++) 
             {
                 boba = "";
                 paxaSexs = new string[count_box];
                 cellsTables[i, column]._disiplines = comboBox2.Text;
-                cellsTables[i, column]._rooms = comboBox1.Text;
+                cellsTables[i, column]._rooms = comboBox1.Text.Trim();
                 for (int j =0; j < count_box;j++)
                 {
-                    paxaSexs[j] = arr[j].Text;
+                    paxaSexs[j] = arr[j].Text.Trim();
                 }
                 cellsTables[i, column]._teacher = paxaSexs;
                 cellsTables[i, column]._tema = comboBox3.Text;
                 foreach (var item in paxaSexs)
                 {
-                    boba += item;
+                    boba += item.Trim();
                     boba += " ";
                 }
-                dataGridView[column, i].Value = comboBox2.Text + " " + comboBox3.Text + " " + comboBox1.Text + " " + boba;
+                dataGridView[column, i].Value = comboBox2.Text + " " + comboBox3.Text + " " + comboBox1.Text.Trim() + " " + boba;
                 
             }
         }
@@ -311,7 +309,7 @@ namespace Planning_Work
         {
             if (count_box <= 3)
             {
-                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDownList, Name = Convert.ToString(count_box) };
+                arr[count_box] = new ComboBox() { Location = new Point(pozitionX, pozitionY + 45), Width = 278, Height = 21, DropDownStyle = ComboBoxStyle.DropDown, Name = Convert.ToString(count_box) };
                 Controls.Add(arr[count_box]);
 
                 if (searchTem(saveTeacher, saveTem, saveDisiplines, saveNameGroupe) == -1)

@@ -48,7 +48,6 @@ namespace Planning_Work
                 teacher = GetTeacherForSQL();
                 clas.countGroupe();
 
-
                 InitializeComponent();
                 label2.MaximumSize = new Size(200,800);
                 KeyPreview = true;
@@ -109,11 +108,11 @@ namespace Planning_Work
                 dataGridView1.Columns[9 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
 
 
-                arrayColorDisiplines = new AllColorDisipilens(GetCountUniversalDisiplines(lessons));
+                arrayColorDisiplines = new AllColorDisipilens(GetCountUniversalDisiplines(lessons),false);
                 dataGridView1.AllowDrop = true;
                 ColorDataGrid();
                 VOSKRESENIE();
-                getAlllogical();//Запись буферных зон (Что бы ты еблан не искал потом 1 милион лет)
+                getAlllogical();
             }
             else
             {
@@ -125,6 +124,252 @@ namespace Planning_Work
 
         }
 
+        public Form2()
+        {
+            GetOtherForSQL();
+            lessons = GetLessingForSQL();
+            clas = GetAllRoomsForSQL();
+            people = GetPeopleForSQL();
+            teacher = GetTeacherForSQL();
+            clas.countGroupe();
+            time = getForsqlServer();
+
+            InitializeComponent();
+            label2.MaximumSize = new Size(200, 800);
+            KeyPreview = true;
+            WindowState = FormWindowState.Maximized;
+            colorDialog1.Color = Color.Red;
+            colorDialog2.Color = Color.Red;
+            colorDialog3.Color = Color.Red;
+            colorDialog4.Color = Color.Red;
+            indexColumn = 0;
+            indexRow = 0;
+
+            countFirst = people.BigBoss() * 2;
+            countTwo = people.BigBoss() * 2;
+            countTree = people.BigBoss() * 2;
+            countFour = people.BigBoss() * 2;
+            countFive = people.BigBoss() * 2;
+
+            arrayTable = GetArrayTableFSQL();
+            for (int i = 0; i < allColumn; i++)
+            {
+                dataGridView1.Columns.Add(Convert.ToString(i), "");
+            }
+
+            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
+            for (int j = 0; j < allRow; j++)
+            {
+                dataGridView1.Rows.Add("");
+            }
+
+            createText(dataGridView1, people);
+            setClassAllLessin(dataGridView1, clas);
+
+            dataGridView1.Rows[0].ReadOnly = true;
+            dataGridView1.Rows[1].ReadOnly = true;
+            dataGridView1.Rows[2].ReadOnly = true;
+            dataGridView1.Rows[3].ReadOnly = true;
+            dataGridView1.Rows[4].ReadOnly = true;
+
+            dataGridView1.Columns[0].ReadOnly = true;
+            dataGridView1.Columns[1].ReadOnly = true;
+
+            dataGridView1.Columns[2 + countFirst].ReadOnly = true;
+            dataGridView1.Columns[3 + countFirst].ReadOnly = true;
+
+            dataGridView1.Columns[4 + countFirst + countTwo].ReadOnly = true;
+            dataGridView1.Columns[5 + countFirst + countTwo].ReadOnly = true;
+
+            dataGridView1.Columns[6 + countFirst + countTwo + countTree].ReadOnly = true;
+            dataGridView1.Columns[7 + countFirst + countTwo + countTree].ReadOnly = true;
+
+            dataGridView1.Columns[8 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
+            dataGridView1.Columns[9 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
+
+
+            arrayColorDisiplines = GetArrayColorFSQL();
+            dataGridView1.AllowDrop = true;
+            ColorDataGrid();
+            VOSKRESENIE();
+            getAllLogikalSql();
+        }
+
+        public CellsTable[,] GetArrayTableFSQL()
+        {
+            int i, j, lastRow = -1, lastColumn = -1;
+            CellsTable[,] buffer = new CellsTable[allRow + 1, allColumn+1];
+            string sqlExpression = "SELECT * FROM _arrayTable";
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                {
+                    SqlCommand command = new SqlCommand(sqlExpression, connection);
+                    SqlDataReader read = command.ExecuteReader();
+
+                    if (read.HasRows)
+                    {
+                        while (read.Read())
+                        {
+                            i = Convert.ToInt32(read.GetValue(1).ToString());
+                            j = Convert.ToInt32(read.GetValue(2).ToString());
+                            if (!(i == lastRow && j == lastColumn)) 
+                            {
+                                string[] bufTeach = new string[1];
+                                buffer[i, j]._down = Convert.ToBoolean(read.GetValue(4).ToString()); 
+                                if (Convert.ToString(read.GetValue(3).ToString()) == "")
+                                {
+                                    buffer[i, j]._disiplines = null;
+
+                                }
+                                else
+                                {
+                                    buffer[i, j]._disiplines = Convert.ToString(read.GetValue(3).ToString());
+                                   
+                                }
+                                if (Convert.ToString(read.GetValue(5).ToString()) == "")
+                                {
+                                    buffer[i, j]._rooms = null;
+                                }
+                                else
+                                {
+                                    buffer[i, j]._rooms = Convert.ToString(read.GetValue(5).ToString());
+                                   
+                                }
+                                if (Convert.ToString(read.GetValue(6).ToString()) == "")
+                                {
+                                    bufTeach = null;
+                                }
+                                else
+                                {
+                                    bufTeach[0] = Convert.ToString(read.GetValue(6).ToString());
+                                    buffer[i, j]._teacher = bufTeach;
+                                }
+                                if(Convert.ToString(read.GetValue(7).ToString()) == "")
+                                {
+                                    buffer[i, j]._tema = null;
+                                }
+                                else
+                                {
+                                    buffer[i, j]._tema = Convert.ToString(read.GetValue(7).ToString());
+                                }
+                                lastColumn = j;
+                                lastRow = i;
+                            }
+                            else
+                            {
+                                string[] bufTeach = buffer[lastRow, lastColumn]._teacher;
+                                string[] bufTeach2 = new string[bufTeach.Length+1];
+                                for (int k = 0; k < bufTeach.Length; k++)
+                                {
+                                    bufTeach2[k] = bufTeach[k];
+                                }
+                                bufTeach2[bufTeach.Length] = Convert.ToString(read.GetValue(6).ToString());
+                                buffer[i, j]._teacher = bufTeach2;
+                                lastColumn = j;
+                                lastRow = i;
+                            }
+                        }
+
+                    }
+                }
+                connection.Close();
+            }
+
+            return buffer;
+        }
+        public void getAllLogikalSql()
+        {
+            for(int i =0;i < allRow;i++)
+            {
+                for(int j =0; j < allColumn; j++)
+                {
+                    if (arrayTable[i,j]._disiplines != null && arrayTable[i,j]._disiplines != "")
+                    {
+                        string buf = arrayTable[i, j]._disiplines + " " + arrayTable[i, j]._tema + " " + arrayTable[i, j]._rooms;
+                        if (arrayTable[i,j]._teacher != null)
+                        {
+                            for (int k = 0; k < arrayTable[i, j]._teacher.Length; k++)
+                            {
+                                buf += " " + arrayTable[i, j]._teacher[k];
+                            }
+                        }
+                        dataGridView1[j, i].Value = buf;
+                        dataGridView1[j, i].Style.BackColor = searchDisiplinesColor(arrayTable[i, j]._disiplines);
+                    }
+                    
+                }
+            }
+        }
+
+        public Color searchDisiplinesColor(string disciplines)
+        {
+
+            foreach (var i in arrayColorDisiplines._arrayColorDisiplines)
+            {
+                if (i._disiplines == disciplines)
+                    return i._color;
+            }
+
+            return Color.White;
+        }
+        public AllColorDisipilens GetArrayColorFSQL()
+        {
+            AllColorDisipilens buffer = new AllColorDisipilens(GetCountUniversalDisiplines(lessons),true);
+            string sqlExpression = "SELECT * FROM _colorsArray";
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                {
+                    SqlCommand command = new SqlCommand(sqlExpression, connection);
+                    SqlDataReader read = command.ExecuteReader();
+                    int i = 0;
+                    if (read.HasRows)
+                    {
+                        while (read.Read())
+                        {
+                            buffer._arrayColorDisiplines[i]._disiplines = Convert.ToString(read.GetValue(1).ToString());
+                            buffer._arrayColorDisiplines[i]._color = Color.FromArgb (Convert.ToInt32(read.GetValue(2).ToString()), Convert.ToInt32(read.GetValue(3).ToString()), Convert.ToInt32(read.GetValue(4).ToString()), Convert.ToInt32(read.GetValue(5).ToString()));
+                            if (i < GetCountUniversalDisiplines(lessons)-1) 
+                            {
+                                i++;
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return buffer;
+        }
+        public DateTime getForsqlServer()
+        {
+            DateTime buffer = new DateTime (12);
+            string sqlExpression = "SELECT * FROM _other";
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                {
+                    SqlCommand command = new SqlCommand(sqlExpression, connection);
+                    SqlDataReader read = command.ExecuteReader();
+
+                    if (read.HasRows)
+                    {
+                        while (read.Read())
+                        {
+                            buffer = Convert.ToDateTime(read.GetValue(1).ToString());
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return buffer;
+        }
         //Подключение к таблице 
         public string get_cs()
         {
@@ -381,37 +626,153 @@ namespace Planning_Work
         //Сохранение (вывод все в таблицу)
         private void button4_Click(object sender, EventArgs e)
         {
-            string pathFile = "";
-
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            SqlDataReader buff;
+            bool Dont_createTable;
+            //ArrayTable
+            using (var connection = new SqlConnection(sqlConnect()))
             {
-                pathFile = saveFileDialog1.FileName;
-
-
-                Excel.Application App;
-                Excel.Workbook xlsWB;
-                Excel.Worksheet xlsSheet;
-
-                App = new Excel.Application();
-                xlsWB = App.Workbooks.Add();
-                xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-
-                App = new Excel.Application();
-
-                for (int i = 0; i < allRow; i++)
+                connection.Open();
+                using (var cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE  TABLE_NAME='_arrayTable';", connection))
                 {
-                    for (int j = 0; j < allColumn; j++)
+                    buff = cmd.ExecuteReader();
+                    Dont_createTable = buff.HasRows;
+                }
+                connection.Close();
+                connection.Open();
+                if (Dont_createTable == false)
+                {
+                    using (var cmd = new SqlCommand("CREATE TABLE _arrayTable ( ID int NOT NULL IDENTITY(1,1) primary key,  roww NVARCHAR(MAX), colummn NVARCHAR(MAX),  disiplines NVARCHAR(MAX),  down NVARCHAR(MAX),  rooms NVARCHAR(MAX),  teacher NVARCHAR(MAX),  tema NVARCHAR(MAX))", connection))
                     {
-                        if (dataGridView1[j, i].Value != null)
-                        {
-                            xlsSheet.Cells[i + 1, j + 1] = dataGridView1[j, i].Value.ToString();
-                        }
+                        cmd.ExecuteNonQuery();
                     }
                 }
-                xlsWB.SaveAs(pathFile);
-                xlsWB.Close(true);
-                App.Quit();
+                else
+                {
+                    using (var cmd = new SqlCommand("DROP TABLE _arrayTable; \n CREATE TABLE _arrayTable ( ID int NOT NULL IDENTITY(1,1) primary key,  roww NVARCHAR(MAX),  colummn NVARCHAR(MAX),  disiplines NVARCHAR(MAX),  down NVARCHAR(MAX),  rooms NVARCHAR(MAX),  teacher NVARCHAR(MAX),  tema NVARCHAR(MAX))", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                connection.Close();
+
+
+                for (int i = 0; i < allRow + 1; i++) 
+                {
+                    for (int j = 0; j < allColumn + 1; j++)
+                    {
+                        string sqlComandForSetData = "INSERT INTO _arrayTable (roww, colummn, disiplines, down, rooms, teacher, tema) VALUES";
+                        if (arrayTable[i, j]._teacher != null && arrayTable[i, j]._teacher.Length != 0)
+                        {
+                            for (int k = 0; k < arrayTable[i, j]._teacher.Length; k++)
+                            {
+                                sqlComandForSetData = "INSERT INTO _arrayTable (roww, colummn, disiplines, down, rooms, teacher, tema) VALUES";
+                                sqlComandForSetData += " (\'" + i + "\', \'" + j + "\', \'" + arrayTable[i, j]._disiplines + "\', \'" + arrayTable[i, j]._down + "\', \'" + arrayTable[i, j]._rooms + "\', \'" + arrayTable[i, j]._teacher[k] + "\', \'" + arrayTable[i, j]._tema + "\')";
+                                connection.Open();
+                                using (var cmd = new SqlCommand(sqlComandForSetData, connection))
+                                {
+                                    cmd.ExecuteNonQuery();
+                                }
+                                connection.Close();
+                            }
+                        }
+                        else
+                        {
+                            sqlComandForSetData += " (\'" + i + "\', \'" + j + "\', \'" + arrayTable[i, j]._disiplines + "\', \'" + arrayTable[i, j]._down + "\', \'" + arrayTable[i, j]._rooms + "\', \'" + "" + "\', \'" + arrayTable[i, j]._tema + "\')";
+                            connection.Open();
+                            using (var cmd = new SqlCommand(sqlComandForSetData, connection))
+                            {
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        connection.Close();
+                    }
+                }
             }
+
+            //ColorArray 
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE  TABLE_NAME='_colorsArray';", connection))
+                {
+                    buff = cmd.ExecuteReader();
+                    Dont_createTable = buff.HasRows;
+                }
+                connection.Close();
+                connection.Open();
+                if (Dont_createTable == false)
+                {
+                    using (var cmd = new SqlCommand("CREATE TABLE _colorsArray (ID int NOT NULL IDENTITY(1,1) primary key, disiplines NVARCHAR(MAX),  colorA NVARCHAR(MAX),colorR NVARCHAR(MAX),colorG NVARCHAR(MAX), colorB NVARCHAR(MAX))", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    using (var cmd = new SqlCommand("DROP TABLE _colorsArray; \n CREATE TABLE _colorsArray ( ID int NOT NULL IDENTITY(1,1) primary key, disiplines NVARCHAR(MAX),  colorA NVARCHAR(MAX),colorR NVARCHAR(MAX),colorG NVARCHAR(MAX), colorB NVARCHAR(MAX))", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                connection.Close();
+
+
+                for (int i =0; i< arrayColorDisiplines._arrayColorDisiplines.Length;i++)
+                {
+                    string sqlComandForSetData = "INSERT INTO _colorsArray (disiplines, colorA,colorR,colorG,colorB) VALUES";
+                    connection.Open();
+                    sqlComandForSetData += " (\'" + arrayColorDisiplines.getColor(i)._disiplines + "\', \'"  + arrayColorDisiplines.getColor(i)._color.A + "\', \'" + arrayColorDisiplines.getColor(i)._color.R + "\', \'" + arrayColorDisiplines.getColor(i)._color.G + "\', \'" + arrayColorDisiplines.getColor(i)._color.B + "\')";
+                    using (var cmd = new SqlCommand(sqlComandForSetData, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    connection.Close();
+                }
+            }
+
+            //other
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE  TABLE_NAME='_other';", connection))
+                {
+                    buff = cmd.ExecuteReader();
+                    Dont_createTable = buff.HasRows;
+                }
+                connection.Close();
+                connection.Open();
+                if (Dont_createTable == false)
+                {
+                    using (var cmd = new SqlCommand("CREATE TABLE _other ( ID int NOT NULL IDENTITY(1,1) primary key,  date NVARCHAR(MAX))", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    using (var cmd = new SqlCommand("DROP TABLE _other; \n CREATE TABLE _other ( ID int NOT NULL IDENTITY(1,1) primary key,  date NVARCHAR(MAX))", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                connection.Close();
+
+
+                string sqlComandForSetData = "INSERT INTO _other (date) VALUES";
+                sqlComandForSetData += " (\'" + time.ToString() + "\')";
+                connection.Open();
+                using (var cmd = new SqlCommand(sqlComandForSetData, connection))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                connection.Close();
+
+            }
+        }
+
+        public string sqlConnect()
+        {
+            return "Data Source=" + Properties.Settings.Default.PathSqlServer + "; Initial Catalog =SaveOne; User ID = sa; Password = 123456";
         }
 
         //Размер ячеек и текста
@@ -486,12 +847,6 @@ namespace Planning_Work
         //Цвет данному предмету
         private void button7_Click(object sender, EventArgs e)
         {
-            //if (checkBox1.Checked)
-            //{
-            //    MessageBox.Show("Отключите режим перетаскивания");
-            //}
-            //else
-            //{
                 colorDialog3.ShowDialog();
                 arrayColorDisiplines.PushColorDisiplines(colorDialog3.Color, arrayTable[row, colmn]._disiplines);
                 for (int i = 0; i < allRow; i++)
@@ -504,8 +859,6 @@ namespace Planning_Work
                         }
                     }
                 }
-            //}
-
         }
 
         //Цвет нарушения логики 
@@ -700,6 +1053,7 @@ namespace Planning_Work
         {
             int SourseRow = dataGridView1.HitTest(e.X, e.Y).RowIndex;
             int SourseColumn = dataGridView1.HitTest(e.X, e.Y).ColumnIndex;
+
             if (SourseRow > -1 && SourseColumn  > -1)
             {
                 row = SourseRow;
@@ -757,9 +1111,10 @@ namespace Planning_Work
         {
             if (!dataGridView1[colmn, row].ReadOnly)
             {
+                numberGroup = dataGridView1[colmn, 3].Value.ToString();
                 if (!_pasteOrCut)
                 {
-                    if (arrayTable[row, colmn]._teacher != null)
+                    if (arrayTable[row, colmn]._teacher != null && arrayTable[row, colmn]._rooms != null)
                     {
                         if (dataGridView1[colmn, row].Value != null)
                         {
@@ -895,7 +1250,7 @@ namespace Planning_Work
 
             if (dataGridView1[hit.ColumnIndex, hit.RowIndex].ReadOnly != true)
             {
-                if (arrayTable[DragRow, DragColumn]._teacher != null)
+                if (arrayTable[DragRow, DragColumn]._teacher != null && arrayTable[DragRow, DragColumn]._rooms != null)
                 {
                     if (dataGridView1[hit.ColumnIndex, 3].Value.ToString() == dataGridView1[DragColumn, 3].Value.ToString())
                     {
@@ -925,6 +1280,9 @@ namespace Planning_Work
                                         allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
                                     }
                                 }
+                                ColorDataGrid();
+                                VOSKRESENIE();
+                                ColorDataGridAll();
                             }
                             else
                             {
@@ -946,9 +1304,7 @@ namespace Planning_Work
                     MessageBox.Show("Пожалуйста, запоните для начала ячейку");
                 }
             }
-            ColorDataGrid();
-            VOSKRESENIE();
-            ColorDataGridAll();
+
         }
 
         public bool DragAndDrop_chaekPool(int Frow, int Fcol, int up, int down)
@@ -992,6 +1348,11 @@ namespace Planning_Work
 
         }
 
+        private void лекционныеПотокиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
         public void DragAndDrop_change2(int ColumnIndex, int RowIndex, int up, int down)
         {
             int RowTwo = DragRow - up;
@@ -1030,6 +1391,7 @@ namespace Planning_Work
             return answer;
         }
 
+        
         public int UpCut()
         {
             int answer = 0;
@@ -1083,21 +1445,6 @@ namespace Planning_Work
             return dataGridView1[fColmn, 3].Value.ToString();
         }
 
-        // Получение номера дисциплины в учительском массиве
-        //public int GetNumberDisciplinesForTeacherArray(Teacher teacher, int numbergroup, string disciplens)
-        //{
-        //    int count = 0;
-        //    for (int i = 0; i < teacher.getCount(); i++)
-        //    {
-        //        if (teacher._arrayGroup[numbergroup]._arrayDiscipline[i]._nameDiscipline == disciplens)
-        //        {
-        //            count = i;
-        //            return count;
-        //        }
-        //    }
-        //    return count;
-        //}
-
         //Вывод ошибок
         private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
@@ -1117,7 +1464,7 @@ namespace Planning_Work
             row = e.RowIndex;
             colmn = e.ColumnIndex;
             int countCheakDisiplines = 0;
-            if (row > -1 && colmn > -1)
+            if (row > -1 && colmn > -1 && dataGridView1[colmn,row].ReadOnly != true)
             {
                 
                 numberGroup = dataGridView1[colmn, 3].Value.ToString();
@@ -1297,6 +1644,7 @@ namespace Planning_Work
 
                         while (countHour > 0)
                         {
+                            buffClass = "";
                             dataGridView1[count, countRow].Value = lessons[numberGroup]._arrayLesson[i]._nameDiscipline + " " + lessons[numberGroup]._arrayLesson[i]._tema;
                             arrayTable[countRow, count]._disiplines = lessons[numberGroup]._arrayLesson[i]._nameDiscipline;
                             arrayTable[countRow, count]._tema = lessons[numberGroup]._arrayLesson[i]._tema;
@@ -1304,6 +1652,14 @@ namespace Planning_Work
                             {
                                 arrayTable[countRow, count]._rooms = buffClass;
                                 dataGridView1[count, countRow].Value = dataGridView1[count, countRow].Value + " " + buffClass;
+                            }
+                            else
+                            {
+                                if(countRoomsFB(lessons[numberGroup]._arrayLesson[i]._nameDiscipline, dataGridView1[count, 3].Value.ToString(), lessons[numberGroup]._arrayLesson[i]._tema, ref buffClass) == 2)
+                                {
+                                    arrayTable[countRow, count]._rooms = buffClass;
+                                    dataGridView1[count, countRow].Value = dataGridView1[count, countRow].Value + " " + buffClass;
+                                }
                             }
                             
                             
@@ -1319,6 +1675,7 @@ namespace Planning_Work
                 }
             }
         }
+
         //Проверка на преподов
         public int countPrepodsFB (string nameDisiplines, string numberGroupe, string teme, ref string[] buffTeach)
         {
@@ -1335,15 +1692,18 @@ namespace Planning_Work
 
             return -1;
         }
+
         public int countRoomsFB(string nameDisiplines, string numberGroupe, string teme, ref string buffClass)
         {
             bool myCheakDead = false;
+            bool nenaxod = true;
             for (int i = 0; i < teacher._array.Length; i++)
             {
                 if (clas._array[i].numberGroupe == numberGroupe && clas._array[i].AllLessin == nameDisiplines)
                 {
                     if (!myCheakDead)
                     {
+                        nenaxod = false;
                         buffClass = clas._array[i].rooms;
                         myCheakDead = true;
                     }
@@ -1353,11 +1713,19 @@ namespace Planning_Work
                     }
                 }
             }
+
+            if (nenaxod)
+            {
+                for (int i = 0; i < teacher._array.Length; i++)
+                {
+                    if (clas._array[i].numberGroupe == numberGroupe && clas._array[i].AllLessin == numberGroupe)
+                        buffClass = clas._array[i].rooms;
+                }
+                return 2;
+            }
             return 1;
         }
-
-
-
+        
         //Проверка по горизонтали
         public void cheakGorizontal(int fRow)
         {
@@ -1369,21 +1737,24 @@ namespace Planning_Work
                     {
                         if (dataGridView1[i, fRow].Value != null && arrayTable[fRow, i]._down != true && arrayTable[fRow, j]._down != true)
                         {
-                            if (arrayTable[fRow, j]._rooms == arrayTable[fRow, i]._rooms && j != i)
+                            if (arrayTable[fRow, j]._rooms == arrayTable[fRow, i]._rooms && j != i && arrayTable[fRow, j]._rooms != "" && arrayTable[fRow, j]._rooms != "")
                             {
                                 dataGridView1[j, fRow].Style.ForeColor = colorDialog2.Color;
                                 dataGridView1[i, fRow].Style.ForeColor = colorDialog2.Color;
                                 if (dataGridView1[j, fRow].ToolTipText.IndexOf("У вас совпали классы в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n") == -1)
                                     dataGridView1[j, fRow].ToolTipText += "У вас совпали классы в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n";
                             }
-                            
-                            if (arrayTable[fRow, j]._teacher !=  null && arrayTable[fRow, i]._teacher != null && EqualArrTeachers(arrayTable[fRow, j]._teacher, arrayTable[fRow, i]._teacher)>0 && j != i && arrayTable[fRow, i]._down != true && arrayTable[fRow, j]._down != true)
+                            if (arrayTable[fRow, j]._teacher != null &&  arrayTable[fRow, j]._teacher.Length>0)
                             {
-                                dataGridView1[j, fRow].Style.ForeColor = colorDialog1.Color;
-                                dataGridView1[i, fRow].Style.ForeColor = colorDialog1.Color;
-                                if (dataGridView1[j, fRow].ToolTipText.IndexOf("У вас совпали преподаватели в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n") == -1)
-                                    dataGridView1[j, fRow].ToolTipText += "У вас совпали преподаватели в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n";
+                                if (arrayTable[fRow, j]._teacher != null && arrayTable[fRow, j]._teacher[0] != "" && arrayTable[fRow, i]._teacher != null && EqualArrTeachers(arrayTable[fRow, j]._teacher, arrayTable[fRow, i]._teacher) > 0 && j != i && arrayTable[fRow, i]._down != true && arrayTable[fRow, j]._down != true)
+                                {
+                                    dataGridView1[j, fRow].Style.ForeColor = colorDialog1.Color;
+                                    dataGridView1[i, fRow].Style.ForeColor = colorDialog1.Color;
+                                    if (dataGridView1[j, fRow].ToolTipText.IndexOf("У вас совпали преподаватели в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n") == -1)
+                                        dataGridView1[j, fRow].ToolTipText += "У вас совпали преподаватели в данный день группе " + searchStringGroup(i) + " и " + searchStringGroup(j) + "\n";
+                                }
                             }
+                            
                         }
                     }
                 }
@@ -1547,11 +1918,23 @@ namespace Planning_Work
         public ColorDisiplines[] _arrayColorDisiplines;
         public int _lenght;
         public int _count;
-        public AllColorDisipilens(int count)
+
+
+        public AllColorDisipilens(int count, bool two)
         {
-            _count = 0;
-            _arrayColorDisiplines = new ColorDisiplines[count];
-            _lenght = count;
+            if (!two)
+            {
+                _count = 0;
+                _arrayColorDisiplines = new ColorDisiplines[count];
+                _lenght = count;
+            }
+            else
+            {
+                _count = count;
+                _arrayColorDisiplines = new ColorDisiplines[count];
+                _lenght = count;
+            }
+            
         }
         public void PushColorDisiplines(Color color, string disi)
         {
@@ -1578,7 +1961,15 @@ namespace Planning_Work
 
             return -1;
         }
+        public ColorDisiplines getColor (int number)
+        {
+            if (number >0 && number < _arrayColorDisiplines.Length)
+            {
+                return _arrayColorDisiplines[number];
+            }
 
+            return _arrayColorDisiplines[0];
+        }
 
     }
     public struct OnePozitionsTeacher

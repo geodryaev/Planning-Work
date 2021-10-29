@@ -53,6 +53,7 @@ namespace Planning_Work
         //-----------------------------------Форма для расписания
         private void button7_Click(object sender, EventArgs e)
         {
+            ClearMSQLtableSave();
             Form2 form = new Form2( countUploadFile, dateTimePicker1.Value);
             form.ShowDialog();
             
@@ -60,63 +61,7 @@ namespace Planning_Work
         //-----------------------------------Добавить таблицу в базу данных
         private void button1_Click(object sender, EventArgs e)
         {
-            string pathFile = "";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                pathFile = openFileDialog1.FileName;
             
-
-                //открытие книги
-                if (ItsExsel(pathFile))
-                {
-
-                    Excel.Application App;
-                    Excel.Workbook xlsWB;
-                    Excel.Worksheet xlsSheet;
-
-                    App = new Excel.Application();
-                    xlsWB = App.Workbooks.Open(@pathFile);
-                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-
-                    int countWorksheets = xlsWB.Worksheets.Count;
-
-                    progressBar1.Maximum = countWorksheets*2;
-                    progressBar1.Value = 0;
-                    for (int numberPage = 1; numberPage <= countWorksheets; numberPage++)
-                    {
-                        
-                        xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(numberPage);
-
-                        int count = 0 ;
-                        string name = xlsSheet.Name;
-
-                        int[] arrayAllLessin = getAllLessin(xlsSheet.Cells[1, 1].Text, ref count);
-                        int countTriple = 0;
-                        Triple[] lesson = getLess(xlsSheet, ref countTriple);
-                        Kastil1++;
-                        progressBar1.Value++;
-                        for (int i = 0; i < count; i++) 
-                        {
-                            baseItem.pushElements(name, arrayAllLessin[i], NormalNameKyrs(xlsWB.Name));
-                            allLesson[countAllLessons] = new AllLessin(Convert.ToString(arrayAllLessin[i]),countTriple);
-                            allLesson[countAllLessons].pushtriple(lesson);
-                            countAllLessons++;
-                        }
-                        progressBar1.Value++;
-                    }
-
-                    countUploadFile++;
-                    xlsWB.Save();
-                    xlsWB.Close(true);
-                    App.Quit();
-                    progressBar1.Value = 0;
-                }
-                else
-                {
-                    MessageBox.Show("Выбраный файл не является Excel");
-                }
-            }
         }
 
         //-----------------------------------Создание таблицы
@@ -158,46 +103,12 @@ namespace Planning_Work
         private void button4_Click(object sender, EventArgs e)
         {
 
-            string pathFile = "";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                pathFile = openFileDialog1.FileName;
-
-
-                //открытие книги
-                if (ItsExsel(pathFile))
-                {
-                    Excel.Application App;
-                    Excel.Workbook xlsWB;
-                    Excel.Worksheet xlsSheet;
-
-
-                    App = new Excel.Application();
-                    xlsWB = App.Workbooks.Open(@pathFile);
-                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-
-                    int countWorksheets = xlsWB.Worksheets.Count;
-                    
-                    teacher = new Teacher();
-                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-                    getGoodMan(xlsSheet);
-
-                    xlsWB.Save();
-                    xlsWB.Close(true);
-                    App.Quit();
-                }
-                else
-                {
-                    MessageBox.Show("Выбраный файл не является Excel");
-                }
-            }
         }
         
         //-----------------------------------Очистка памяти
         private void button3_Click(object sender, EventArgs e)
         {
-
+            ClearMSQLtableSave();
         }
 
         //-----------------------------------Крепление классов и предметов
@@ -238,42 +149,13 @@ namespace Planning_Work
         //-----------------------------------Приязка групп и классов
         private void button6_Click(object sender, EventArgs e)
         {
-            string pathFile = "";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                pathFile = openFileDialog1.FileName;
-
-
-                //открытие книги
-                if (ItsExsel(pathFile))
-                {
-
-                    Excel.Application App;
-                    Excel.Workbook xlsWB;
-                    Excel.Worksheet xlsSheet;
-
-
-                    App = new Excel.Application();
-                    xlsWB = App.Workbooks.Open(@pathFile);
-                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
-
-
-                    getGP(xlsSheet);
-                    xlsWB.Save();
-                    xlsWB.Close(true);
-                    App.Quit();
-                }
-                else
-                {
-                    MessageBox.Show("Выбраный файл не является Excel");
-                }
-            }
+           
         }
 
         private void button2_Click_1(object sender, EventArgs e)
         {
             SqlDataReader buff;
+            ClearMSQLtableSave();
             bool Dont_createTable;
             using (var connection = new SqlConnection(get_cs()))
             {
@@ -476,7 +358,48 @@ namespace Planning_Work
             }
 
         }
+        public void ClearMSQLtableSave()
+        {
+            SqlDataReader buff;
+            bool Dont_createTable;
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE  TABLE_NAME='_arrayTable';", connection))
+                {
+                    buff = cmd.ExecuteReader();
+                    Dont_createTable = buff.HasRows;
+                }
+                connection.Close();
+                connection.Open();
+                if (Dont_createTable == true)
+                {
+                    using (var cmd = new SqlCommand("DROP TABLE _arrayTable", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                connection.Close();
 
+                connection.Open();
+                using (var cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE  TABLE_NAME='_colorsArray';", connection))
+                {
+                    buff = cmd.ExecuteReader();
+                    Dont_createTable = buff.HasRows;
+                }
+                connection.Close();
+                connection.Open();
+                if (Dont_createTable == true)
+                {
+                    using (var cmd = new SqlCommand("DROP TABLE _colorsArray", connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                connection.Close();
+            }
+        }
         private void OptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormSettingsForSqlServer form = new FormSettingsForSqlServer();
@@ -562,7 +485,7 @@ namespace Planning_Work
                 return "сентябрь";
 
             if (engMont == "10")
-                return "октябырь";
+                return "октябрь";
 
             if (engMont == "11")
                 return "ноябрь";
@@ -1193,6 +1116,172 @@ namespace Planning_Work
         {
             Form3 form = new Form3();
             form.ShowDialog();
+        }
+
+        private void button5_Click_1(object sender, EventArgs e)
+        {
+            SqlDataReader buff;
+            bool Dont_createTable;
+            using (var connection = new SqlConnection(sqlConnect()))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE  TABLE_NAME='_arrayTable';", connection))
+                {
+                    buff = cmd.ExecuteReader();
+                    Dont_createTable = buff.HasRows;
+                }
+                connection.Close();
+                connection.Open();
+                if (Dont_createTable == true)
+                {
+                    Form2 form = new Form2();
+                    form.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("У вас нет сохранений");
+                }
+                connection.Close();
+            }
+        }
+
+        public string sqlConnect()
+        {
+            return "Data Source=" + Properties.Settings.Default.PathSqlServer + "; Initial Catalog =SaveOne; User ID = sa; Password = 123456";
+        }
+
+        private void курсToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string pathFile = "";
+            ClearMSQLtableSave();
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                pathFile = openFileDialog1.FileName;
+
+
+                //открытие книги
+                if (ItsExsel(pathFile))
+                {
+
+                    Excel.Application App;
+                    Excel.Workbook xlsWB;
+                    Excel.Worksheet xlsSheet;
+
+                    App = new Excel.Application();
+                    xlsWB = App.Workbooks.Open(@pathFile);
+                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+
+                    int countWorksheets = xlsWB.Worksheets.Count;
+
+                    progressBar1.Maximum = countWorksheets * 2;
+                    progressBar1.Value = 0;
+                    for (int numberPage = 1; numberPage <= countWorksheets; numberPage++)
+                    {
+
+                        xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(numberPage);
+
+                        int count = 0;
+                        string name = xlsSheet.Name;
+
+                        int[] arrayAllLessin = getAllLessin(xlsSheet.Cells[1, 1].Text, ref count);
+                        int countTriple = 0;
+                        Triple[] lesson = getLess(xlsSheet, ref countTriple);
+                        Kastil1++;
+                        progressBar1.Value++;
+                        for (int i = 0; i < count; i++)
+                        {
+                            baseItem.pushElements(name, arrayAllLessin[i], NormalNameKyrs(xlsWB.Name));
+                            allLesson[countAllLessons] = new AllLessin(Convert.ToString(arrayAllLessin[i]), countTriple);
+                            allLesson[countAllLessons].pushtriple(lesson);
+                            countAllLessons++;
+                        }
+                        progressBar1.Value++;
+                    }
+
+                    countUploadFile++;
+                    xlsWB.Save();
+                    xlsWB.Close(true);
+                    App.Quit();
+                    progressBar1.Value = 0;
+                }
+                else
+                {
+                    MessageBox.Show("Выбраный файл не является Excel");
+                }
+            }
+        }
+
+        private void группыИКлассыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string pathFile = "";
+            ClearMSQLtableSave();
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                pathFile = openFileDialog1.FileName;
+
+
+                //открытие книги
+                if (ItsExsel(pathFile))
+                {
+
+                    Excel.Application App;
+                    Excel.Workbook xlsWB;
+                    Excel.Worksheet xlsSheet;
+
+
+                    App = new Excel.Application();
+                    xlsWB = App.Workbooks.Open(@pathFile);
+                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+
+
+                    getGP(xlsSheet);
+                    xlsWB.Save();
+                    xlsWB.Close(true);
+                    App.Quit();
+                }
+                else
+                {
+                    MessageBox.Show("Выбраный файл не является Excel");
+                }
+            }
+        }
+
+        private void преподавателиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string pathFile = "";
+            ClearMSQLtableSave();
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                pathFile = openFileDialog1.FileName;
+
+
+                //открытие книги
+                if (ItsExsel(pathFile))
+                {
+                    Excel.Application App;
+                    Excel.Workbook xlsWB;
+                    Excel.Worksheet xlsSheet;
+
+
+                    App = new Excel.Application();
+                    xlsWB = App.Workbooks.Open(@pathFile);
+                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+
+                    int countWorksheets = xlsWB.Worksheets.Count;
+
+                    teacher = new Teacher();
+                    xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+                    getGoodMan(xlsSheet);
+
+                    xlsWB.Save();
+                    xlsWB.Close(true);
+                    App.Quit();
+                }
+                else
+                {
+                    MessageBox.Show("Выбраный файл не является Excel");
+                }
+            }
         }
     }
     public struct Triple
