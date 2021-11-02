@@ -847,7 +847,14 @@ namespace Planning_Work
         //Цвет данному предмету
         private void button7_Click(object sender, EventArgs e)
         {
-                colorDialog3.ShowDialog();
+            colorDialog3.ShowDialog();
+            if (colorDialog3.Color == Color.Red)
+            {
+                MessageBox.Show("Данный цвет используется системой для обявление ошибок");
+                colorDialog3.Color = Color.White;
+            }
+            else
+            {
                 arrayColorDisiplines.PushColorDisiplines(colorDialog3.Color, arrayTable[row, colmn]._disiplines);
                 for (int i = 0; i < allRow; i++)
                 {
@@ -859,6 +866,7 @@ namespace Planning_Work
                         }
                     }
                 }
+            }
         }
 
         //Цвет нарушения логики 
@@ -1051,6 +1059,7 @@ namespace Planning_Work
         // Drag and Drop Услровия
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
         {
+            dataGridView1.ClearSelection();
             int SourseRow = dataGridView1.HitTest(e.X, e.Y).RowIndex;
             int SourseColumn = dataGridView1.HitTest(e.X, e.Y).ColumnIndex;
 
@@ -1060,7 +1069,11 @@ namespace Planning_Work
                 colmn = SourseColumn;
                 if (!checkBox1.Checked == true && !dataGridView1[colmn, row].ReadOnly)
                 {
-
+                    numberGroup = dataGridView1[colmn, 3].Value.ToString();
+                    if (arrayTable[SourseRow, SourseColumn]._disiplines != null && arrayTable[SourseRow, SourseColumn]._disiplines != "")
+                    {
+                        label2.Text = searchCommentsTems(numberGroup, arrayTable[SourseRow, SourseColumn]._disiplines, arrayTable[SourseRow, SourseColumn]._tema);
+                    }
                     DragRow = SourseRow;
                     DragColumn = SourseColumn;
                     dataGridView1.DoDragDrop(DragRow, DragDropEffects.Copy);
@@ -1094,16 +1107,6 @@ namespace Planning_Work
 
                 }
             }
-        }
-
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            button9.PerformClick();
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         //Вырезка
@@ -1181,7 +1184,6 @@ namespace Planning_Work
                             {
                                 MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
                             }
-
                         }
                         else
                         {
@@ -1201,7 +1203,13 @@ namespace Planning_Work
                                 dataGridView1[colmn, row].Value += item;
 
                             }
-                            dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " " + b._teacher;
+
+                            dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " ";
+                            foreach (var item in b._teacher)
+                            {
+                                dataGridView1[cutColumn, cutRow].Value += " ";
+                                dataGridView1[cutColumn, cutRow].Value += item;
+                            }
 
                             allCheakPozizitions(row, colmn);
                             allCheakPozizitions(cutRow, cutColumn);
@@ -1255,6 +1263,8 @@ namespace Planning_Work
             tema = arrayTable[DragRow, DragColumn]._tema;
             room = arrayTable[DragRow, DragColumn]._rooms;
             teach = arrayTable[DragRow, DragColumn]._teacher;
+
+            
 
             if (dataGridView1[hit.ColumnIndex, hit.RowIndex].ReadOnly != true)
             {
@@ -1468,25 +1478,32 @@ namespace Planning_Work
         //Событие нажатия на ячейку 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+
+
+            dataGridView1.ClearSelection();
             label2.Text = "";
             row = e.RowIndex;
             colmn = e.ColumnIndex;
             int countCheakDisiplines = 0;
-            if (row > -1 && colmn > -1 && dataGridView1[colmn,row].ReadOnly != true)
+         
+            if (row > -1 && colmn > -1 && dataGridView1[colmn, row].ReadOnly != true)
             {
-                
+
                 numberGroup = dataGridView1[colmn, 3].Value.ToString();
+                if (arrayTable[e.RowIndex, e.ColumnIndex]._disiplines != null && arrayTable[e.RowIndex, e.ColumnIndex]._disiplines != "")
+                {
+                    label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
+                }
 
                 if (checkBox1.Checked)
                 {
-                    
                     if (!(arrayTable[row, colmn]._disiplines == null && arrayTable[row, colmn]._disiplines == ""))
                     {
+                        
                         if (cheakCells(arrayTable[e.RowIndex, e.ColumnIndex]))
                         {
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
-                                label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
                                 Form4 form = new Form4(arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1, dataGridView1[e.ColumnIndex,4].Value.ToString());
                                 form.ShowDialog();
                                 countCheakDisiplines = form.GetDistance;
@@ -1496,7 +1513,6 @@ namespace Planning_Work
                         {
                             if (dataGridView1[e.ColumnIndex, e.RowIndex].Value != null && dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly != true && checkBox1.Checked)
                             {
-                                label2.Text = searchCommentsTems(numberGroup, arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema);
                                 Form4 form = new Form4( arrayTable[e.RowIndex, e.ColumnIndex]._disiplines, arrayTable[e.RowIndex, e.ColumnIndex]._tema, arrayTable[e.RowIndex, e.ColumnIndex]._teacher, arrayTable[e.RowIndex, e.ColumnIndex]._rooms, ref arrayTable, ref sender, ref e, clas, teacher, dataGridView1[e.ColumnIndex, 3].Value.ToString(), ref dataGridView1, dataGridView1[e.ColumnIndex, 4].Value.ToString());
                                 form.ShowDialog();
                                 countCheakDisiplines = form.GetDistance;
