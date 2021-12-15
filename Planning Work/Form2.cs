@@ -40,7 +40,6 @@ namespace Planning_Work
         {
             if (countUploadFile >= 0)
             {
-
                 GetOtherForSQL();
                 lessons = GetLessingForSQL();
                 clas = GetAllRoomsForSQL();
@@ -107,9 +106,20 @@ namespace Planning_Work
                 dataGridView1.Columns[8 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
                 dataGridView1.Columns[9 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
 
+                comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+                comboBox1.Items.Add("1 курс");
+                comboBox1.Items.Add("2 курс");
+                comboBox1.Items.Add("3 курс");
+                comboBox1.Items.Add("4 курс");
+                comboBox1.Items.Add("5 курс");
+                comboBox1.Items.Add("Все курсы");
+                dataGridView1.GridColor = Color.Black;
 
                 arrayColorDisiplines = new AllColorDisipilens(GetCountUniversalDisiplines(lessons),false);
+
+
                 dataGridView1.AllowDrop = true;
+                dataGridView1.Rows[4].Frozen = true;
                 ColorDataGrid();
                 VOSKRESENIE();
                 getAlllogical();
@@ -191,6 +201,23 @@ namespace Planning_Work
             dataGridView1.Columns[8 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
             dataGridView1.Columns[9 + countFirst + countTwo + countTree + countFour].ReadOnly = true;
 
+            for (int j = 0; j < allColumn; j++)
+            {
+                if (dataGridView1[j, 5].ReadOnly == false && dataGridView1[j, 3].Value != null && dataGridView1[j, 3].Value.ToString() != "")
+                {
+                    numberGroup = dataGridView1[j, 3].Value.ToString();
+                    allCheakPozizitions(5, j);
+                }
+            }
+
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox1.Items.Add("1 курс");
+            comboBox1.Items.Add("2 курс");
+            comboBox1.Items.Add("3 курс");
+            comboBox1.Items.Add("4 курс");
+            comboBox1.Items.Add("5 курс");
+            comboBox1.Items.Add("Все курсы");
+            dataGridView1.GridColor = Color.Black;
 
             arrayColorDisiplines = GetArrayColorFSQL();
             dataGridView1.AllowDrop = true;
@@ -252,6 +279,7 @@ namespace Planning_Work
                                 if(Convert.ToString(read.GetValue(7).ToString()) == "")
                                 {
                                     buffer[i, j]._tema = null;
+                                    
                                 }
                                 else
                                 {
@@ -317,6 +345,7 @@ namespace Planning_Work
 
             return Color.White;
         }
+
         public AllColorDisipilens GetArrayColorFSQL()
         {
             AllColorDisipilens buffer = new AllColorDisipilens(GetCountUniversalDisiplines(lessons),true);
@@ -346,6 +375,7 @@ namespace Planning_Work
 
             return buffer;
         }
+
         public DateTime getForsqlServer()
         {
             DateTime buffer = new DateTime (12);
@@ -376,7 +406,7 @@ namespace Planning_Work
             return "Data Source=" + Properties.Settings.Default.PathSqlServer + "; Initial Catalog =DarkLight ; User ID = sa; Password = 123456";
         }
 
-        //Получение row, column и countGroupe
+         //Получение row, column и countGroupe
         private void GetOtherForSQL()
         {
             string sqlExpression = "SELECT * FROM _other";
@@ -805,16 +835,6 @@ namespace Planning_Work
             }
         }
 
-        // Обеденяет ячейки сверху вних 
-        public void AllLessinCellsRow(DataGridViewCellPaintingEventArgs e, int column, int start_row, int back_row)
-        {
-            if (e.RowIndex >= start_row && e.ColumnIndex == column && e.RowIndex < back_row)
-            {
-                e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
-                e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
-            }
-        }
-
         // Обеденяет ячейки справа на лево 
         public void AllLessinCellsColumn(DataGridViewCellPaintingEventArgs e, int row, int start_column, int back_column)
         {
@@ -855,17 +875,22 @@ namespace Planning_Work
             }
             else
             {
-                arrayColorDisiplines.PushColorDisiplines(colorDialog3.Color, arrayTable[row, colmn]._disiplines);
-                for (int i = 0; i < allRow; i++)
+                if (arrayTable[row, colmn]._disiplines != "" && arrayTable[row, colmn]._disiplines != null)
                 {
-                    for (int j = 0; j < allColumn; j++)
+                    arrayColorDisiplines.PushColorDisiplines(colorDialog3.Color, arrayTable[row, colmn]._disiplines);
+                    for (int i = 0; i < allRow; i++)
                     {
-                        if (dataGridView1[j, i].Value != null && arrayTable[i, j]._disiplines == arrayTable[row, colmn]._disiplines)
+                        for (int j = 0; j < allColumn; j++)
                         {
-                            dataGridView1[j, i].Style.BackColor = colorDialog3.Color;
+                            if (dataGridView1[j, i].Value != null && arrayTable[i, j]._disiplines == arrayTable[row, colmn]._disiplines)
+                            {
+                                dataGridView1[j, i].Style.BackColor = colorDialog3.Color;
+                            }
                         }
                     }
                 }
+                else
+                    MessageBox.Show("Вы пытаетесь дать цвет НЕ дисциплине");
             }
         }
 
@@ -1108,7 +1133,7 @@ namespace Planning_Work
                 }
             }
         }
-
+        
         //Вырезка
         private void button9_Click(object sender, EventArgs e)
         {
@@ -1138,7 +1163,6 @@ namespace Planning_Work
                             }
                             button9.BackgroundImage = Properties.Resources.image2;
                             _pasteOrCut = true;
-
                         }
                     }
                     else
@@ -1148,81 +1172,92 @@ namespace Planning_Work
                 }
                 else
                 {
-                    if (dataGridView1[cutColumn,3].Value.ToString() == dataGridView1[colmn, 3].Value.ToString())
+                    int cutPaste = UpCut() + DownCut() + 1;
+                    if (cutPaste == cutCount || cutPaste < 0)
                     {
-                        if (cutCount != 1)
+                        if (dataGridView1[cutColumn, 3].Value.ToString() == dataGridView1[colmn, 3].Value.ToString())
                         {
-                            if (daysAccept(row, cutColumn, cutCount - 1))
+                            if (cutCount != 1)
                             {
-                                if (DragAndDrop_chaekPool(row, colmn, 0, cutCount - 1))
+                                if (daysAccept(row, cutColumn, cutCount - 1))
                                 {
-                                    for (int i = row; i < row + cutCount; i++)
+                                    if (DragAndDrop_chaekPool(row, colmn, 0, cutCount - 1))
                                     {
-                                        arrayTable[i, colmn]._disiplines = cut_Buufer._disiplines;
-                                        arrayTable[i, colmn]._teacher = cut_Buufer._teacher;
-                                        arrayTable[i, colmn]._tema = cut_Buufer._tema;
-                                        arrayTable[i, colmn]._rooms = cut_Buufer._rooms;
-
-                                        dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
-                                        foreach (var item in cut_Buufer._teacher)
+                                        for (int i = row; i < row + cutCount; i++)
                                         {
-                                            dataGridView1[colmn, i].Value += " ";
-                                            dataGridView1[colmn, i].Value += item;
+                                            arrayTable[i, colmn]._disiplines = cut_Buufer._disiplines;
+                                            arrayTable[i, colmn]._teacher = cut_Buufer._teacher;
+                                            arrayTable[i, colmn]._tema = cut_Buufer._tema;
+                                            arrayTable[i, colmn]._rooms = cut_Buufer._rooms;
 
+                                            dataGridView1[colmn, i].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
+                                            foreach (var item in cut_Buufer._teacher)
+                                            {
+                                                dataGridView1[colmn, i].Value += " ";
+                                                dataGridView1[colmn, i].Value += item;
+
+                                            }
+                                            allCheakPozizitions(i, colmn);
                                         }
-                                        allCheakPozizitions(i, colmn);
+                                        _pasteOrCut = false;
+                                        button9.BackgroundImage = Properties.Resources.cut_105155;
                                     }
-                                    _pasteOrCut = false;
-                                    button9.BackgroundImage = Properties.Resources.cut_105155;
+                                    else
+                                    {
+                                        MessageBox.Show("Нехватает места для вставки данной пары");
+                                    }
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Нехватает места для вставки данной пары");
+                                    MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
                                 }
                             }
                             else
                             {
-                                MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
+                                CellsTable b = arrayTable[row, colmn];
+                                arrayTable[row, colmn]._disiplines = cut_Buufer._disiplines;
+                                arrayTable[row, colmn]._tema = cut_Buufer._tema;
+                                arrayTable[row, colmn]._teacher = cut_Buufer._teacher;
+                                arrayTable[row, colmn]._rooms = cut_Buufer._rooms;
+                                arrayTable[cutRow, cutColumn]._disiplines = b._disiplines;
+                                arrayTable[cutRow, cutColumn]._tema = b._tema;
+                                arrayTable[cutRow, cutColumn]._rooms = b._rooms;
+                                arrayTable[cutRow, cutColumn]._teacher = b._teacher;
+                                dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
+                                foreach (var item in cut_Buufer._teacher)
+                                {
+                                    dataGridView1[colmn, row].Value += " ";
+                                    dataGridView1[colmn, row].Value += item;
+
+                                }
+
+                                dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " ";
+                                if (b._teacher != null)
+                                {
+                                    foreach (var item in b._teacher)
+                                    {
+                                        dataGridView1[cutColumn, cutRow].Value += " ";
+                                        dataGridView1[cutColumn, cutRow].Value += item;
+                                    }
+                                }
+
+
+                                allCheakPozizitions(row, colmn);
+                                allCheakPozizitions(cutRow, cutColumn);
+
+                                _pasteOrCut = false;
+                                button9.BackgroundImage = Properties.Resources.cut_105155;
                             }
                         }
                         else
                         {
-                            CellsTable b = arrayTable[row, colmn];
-                            arrayTable[row, colmn]._disiplines = cut_Buufer._disiplines;
-                            arrayTable[row, colmn]._tema = cut_Buufer._tema;
-                            arrayTable[row, colmn]._teacher = cut_Buufer._teacher;
-                            arrayTable[row, colmn]._rooms = cut_Buufer._rooms;
-                            arrayTable[cutRow, cutColumn]._disiplines = b._disiplines;
-                            arrayTable[cutRow, cutColumn]._tema = b._tema;
-                            arrayTable[cutRow, cutColumn]._rooms = b._rooms;
-                            arrayTable[cutRow, cutColumn]._teacher = b._teacher;
-                            dataGridView1[colmn, row].Value = cut_Buufer._disiplines + " " + cut_Buufer._tema + " " + cut_Buufer._rooms;
-                            foreach (var item in cut_Buufer._teacher)
-                            {
-                                dataGridView1[colmn, row].Value += " ";
-                                dataGridView1[colmn, row].Value += item;
-
-                            }
-
-                            dataGridView1[cutColumn, cutRow].Value = b._disiplines + " " + b._tema + " " + b._rooms + " ";
-                            foreach (var item in b._teacher)
-                            {
-                                dataGridView1[cutColumn, cutRow].Value += " ";
-                                dataGridView1[cutColumn, cutRow].Value += item;
-                            }
-
-                            allCheakPozizitions(row, colmn);
-                            allCheakPozizitions(cutRow, cutColumn);
-
-                            _pasteOrCut = false;
-                            button9.BackgroundImage = Properties.Resources.cut_105155;
+                            MessageBox.Show("Вы пытаетесь вставить пару не в ту группу \n Нужно поставить в группу ");
                         }
                     }
                     else
                     {
-                        MessageBox.Show("Вы пытаетесь вставить пару не в ту группу \n Нужно поставить в группу " );
+                        MessageBox.Show("Вы патаетесь поменять пары разной часовой категории");
                     }
-                    
                 }
             }
             ColorDataGrid();
@@ -1272,44 +1307,48 @@ namespace Planning_Work
                 {
                     if (dataGridView1[hit.ColumnIndex, 3].Value.ToString() == dataGridView1[DragColumn, 3].Value.ToString())
                     {
-                        if (daysAccept(hit.RowIndex, hit.ColumnIndex, up + down))
+                        int cutQual = UpCut() + DownCut() + 1;
+                        if (cutQual == down+up + 1|| cutQual<0)
                         {
-                            if ((up == 0 && down == 0) || DragAndDrop_chaekPool(hit.RowIndex, hit.ColumnIndex, 0, down + up))
+
+                            if (daysAccept(hit.RowIndex, hit.ColumnIndex, up + down))
                             {
-                                if (dataGridView1[hit.ColumnIndex, hit.RowIndex].Value != null)
+                                if ((up == 0 && down == 0) || DragAndDrop_chaekPool(hit.RowIndex, hit.ColumnIndex, 0, down + up))
                                 {
-
-                                    DragAndDrop_change1(hit.ColumnIndex, hit.RowIndex, up, down);
-
-                                    for (int i = 0; i <= down + up; i++)
+                                    if (dataGridView1[hit.ColumnIndex, hit.RowIndex].Value != null)
                                     {
-                                        allCheakPozizitions(DragRow - up + i, DragColumn);
-                                        allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
+
+                                        DragAndDrop_change1(hit.ColumnIndex, hit.RowIndex, up, down);
+
+                                        for (int i = 0; i <= down + up; i++)
+                                        {
+                                            allCheakPozizitions(DragRow - up + i, DragColumn);
+                                            allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
+                                        }
                                     }
+                                    else
+                                    {
+                                        DragAndDrop_change2(hit.ColumnIndex, hit.RowIndex, up, down);
+
+                                        for (int i = 0; i <= down + up; i++)
+                                        {
+                                            allCheakPozizitions(DragRow - up + i, DragColumn);
+                                            allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
+                                        }
+                                    }
+                                    ColorDataGrid();
+                                    VOSKRESENIE();
+                                    ColorDataGridAll();
                                 }
                                 else
                                 {
-                                    DragAndDrop_change2(hit.ColumnIndex, hit.RowIndex, up, down);
-
-
-                                    for (int i = 0; i <= down + up; i++)
-                                    {
-                                        allCheakPozizitions(DragRow - up + i, DragColumn);
-                                        allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
-                                    }
+                                    MessageBox.Show("Нехватает места для вставки данной пары");
                                 }
-                                ColorDataGrid();
-                                VOSKRESENIE();
-                                ColorDataGridAll();
                             }
                             else
                             {
-                                MessageBox.Show("Нехватает места для вставки данной пары");
+                                MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
                             }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Вы пытаетесь разорвать одну тему на несколько дней");
                         }
                     }
                     else
@@ -1370,6 +1409,137 @@ namespace Planning_Work
         {
 
         }
+        // Обеденяет ячейки сверху вних 
+        public void AllLessinCellsRow(DataGridViewCellPaintingEventArgs e, int column, int start_row, int back_row)
+        {
+            if (e.RowIndex >= start_row && e.ColumnIndex == column && e.RowIndex < back_row)
+            {
+                e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
+                e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
+            }
+            if (e.RowIndex == 4)
+            {
+                e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+            }
+
+            if (e.ColumnIndex == 2)
+            {
+                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+            }
+            if (e.ColumnIndex == countFirst + 4)
+            {
+                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+            }
+            if (e.ColumnIndex == countTwo + countFirst + 6)
+            {
+                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+            }
+            if (e.ColumnIndex == countFirst + countTwo + countTree + 8)
+            {
+                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+            }
+            if (e.ColumnIndex == countFirst + countTwo + countTree + countFour + 10)
+            {
+                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+            }
+        }
+        private void comboBox1_TextChanged(object sender, EventArgs e)
+        {
+            switch (comboBox1.Text)
+            {
+                case ("1 курс"):
+                    for (int i = 1; i < allColumn; i++)
+                    {
+                        if (i > 0 && i < countFirst + 2)
+                        {
+                            dataGridView1.Columns[i].Visible = true;
+                        }
+                        else
+                        {
+                            dataGridView1.Columns[i].Visible = false;
+
+                        }
+                        dataGridView1.Columns[i].Frozen = false;
+                    }
+                    dataGridView1.Columns[1].Frozen = true;
+                    break;
+                case ("2 курс"):
+                    for (int i = 1; i < allColumn; i++)
+                    {
+                        if (i > countFirst + 2 && i < countTwo + countFirst + 4) 
+                        {
+                            dataGridView1.Columns[i].Visible = true;
+                        }
+                        else
+                        {
+                            dataGridView1.Columns[i].Visible = false;
+
+                        }
+                        dataGridView1.Columns[i].Frozen = false;
+                    }
+                    dataGridView1.Columns[countFirst + 3].Frozen = true;
+                    break;
+                case ("3 курс"):
+                    for (int i = 1; i < allColumn; i++)
+                    {
+                        if (i > countTwo + countFirst + 4 && i < countTwo + countFirst + countTree+6)
+                        {
+                            dataGridView1.Columns[i].Visible = true;
+                        }
+                        else
+                        {
+                            dataGridView1.Columns[i].Visible = false;
+
+                        }
+                        dataGridView1.Columns[i].Frozen = false;
+                    }
+                    dataGridView1.Columns[countTwo + countFirst + 5].Frozen = true;
+                    break;
+                case ("4 курс"):
+                    for (int i = 1; i < allColumn; i++)
+                    {
+                        if (i > countFirst + countTwo + countTree + 6 && i < countFirst + countTwo + countTree + countFour + 8)
+                        {
+                            dataGridView1.Columns[i].Visible = true;
+                        }
+                        else
+                        {
+                            dataGridView1.Columns[i].Visible = false;
+
+                        }
+                        dataGridView1.Columns[i].Frozen = false;
+                    }
+                    dataGridView1.Columns[countFirst + countTwo + countTree + 7].Frozen = true;
+                    break;
+                case ("5 курс"):
+                    for (int i = 1; i < allColumn; i++)
+                    {
+                        if (i > countFirst + countTwo + countTree + countFour + 8 && i < countFirst + countTwo + countTree + countFour + countFive+10)
+                        {
+                            dataGridView1.Columns[i].Visible = true;
+                        }
+                        else
+                        {
+                            dataGridView1.Columns[i].Visible = false;
+
+                        }
+                        dataGridView1.Columns[i].Frozen = false;
+                    }
+                    dataGridView1.Columns[countFirst + countTwo + countTree + countFour + 9].Frozen = true;
+                    break;
+                case ("Все курсы"):
+                    for (int i = 1; i < allColumn; i++)
+                    {
+                        dataGridView1.Columns[i].Visible = true;
+                        dataGridView1.Columns[i].Frozen = false;
+                    }
+                    dataGridView1.Columns[1].Frozen = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         public void DragAndDrop_change2(int ColumnIndex, int RowIndex, int up, int down)
         {
@@ -1413,10 +1583,16 @@ namespace Planning_Work
         public int UpCut()
         {
             int answer = 0;
-
-            for (int i = row - 3; i < row; i++)
-                if (arrayTable[row, colmn]._disiplines == arrayTable[i, colmn]._disiplines && arrayTable[row, colmn]._tema == arrayTable[i, colmn]._tema)
-                    answer++;
+            if (arrayTable[row, colmn]._disiplines != null && arrayTable[row, colmn]._disiplines != "")
+            {
+                for (int i = row - 3; i < row; i++)
+                    if (arrayTable[row, colmn]._disiplines == arrayTable[i, colmn]._disiplines && arrayTable[row, colmn]._tema == arrayTable[i, colmn]._tema)
+                        answer++;
+            }
+            else
+            {
+                return -5;
+            }
 
             return answer;
         }
@@ -1433,10 +1609,17 @@ namespace Planning_Work
         public int DownCut()
         {
             int answer = 0;
+            if (arrayTable[row, colmn]._disiplines != null && arrayTable[row, colmn]._disiplines != "")
+            {
+                for (int i = row + 3; i > row; i--)
+                    if (arrayTable[row, colmn]._disiplines == arrayTable[i, colmn]._disiplines && arrayTable[row, colmn]._tema == arrayTable[i, colmn]._tema)
+                        answer++;
+            }
+            else
+            {
+                return -5;
+            }
 
-            for (int i = row + 3; i > row; i--)
-                if (arrayTable[row, colmn]._disiplines == arrayTable[i, colmn]._disiplines && arrayTable[row, colmn]._tema == arrayTable[i, colmn]._tema)
-                    answer++;
 
             return answer;
         }
@@ -1628,7 +1811,7 @@ namespace Planning_Work
                 {
                     if (arrayTable[i, j]._down == true)
                     {
-                        dataGridView1[j, i].Style.BackColor = Color.Gray;
+                        dataGridView1[j, i].Style.BackColor = Color.DimGray;
                     }
                 }
             }
