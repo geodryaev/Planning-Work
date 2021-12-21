@@ -987,7 +987,7 @@ namespace Planning_Work
         //Количество столбцов в новой форме
         int CountColumnForNewForms(int countAllLessin, int countUploadFile)
         {
-            int answer = 3 * 5 + countAllLessin * 2;
+            int answer = 2 * 5 + countAllLessin * 2;
 
             return answer;
         }
