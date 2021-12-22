@@ -20,7 +20,7 @@ namespace Planning_Work
 {
     public partial class Form2 : Form
     {
-        public int cutCount, cutRow, cutColumn, row, colmn, countFile, allRow, allColumn, ok = 0, countFirst, countTwo, countTree, countFour, countFive, indexRow, indexColumn, ItIsI = 0, hours, hour, DragRow, DragColumn, countGropeForSql;
+        public int countColumnDAD, cutCount, cutRow, cutColumn, row, colmn, countFile, allRow, allColumn, ok = 0, countFirst, countTwo, countTree, countFour, countFive, indexRow, indexColumn, ItIsI = 0, hours, hour, DragRow, DragColumn, countGropeForSql;
         public string numberGroup, disciplines, tema, room, numberGroupCut;
         public string[] teach;
         public bool[] numberWork = new bool[6];
@@ -1075,7 +1075,7 @@ namespace Planning_Work
         int searchColumnDragAndDrop(int __column)
         {
             numberGroup = dataGridView1[__column, 3].Value.ToString();
-            for (int i = 0; i < __column; i++)
+            for (int i = 0; i <= __column; i++)
             {
                 if (dataGridView1[i, 3].Value  != null && dataGridView1[i, 3].Value.ToString() == numberGroup)
                 {
@@ -1104,13 +1104,12 @@ namespace Planning_Work
         {
             for (int i = 0; i < allColumn; i++)
             {
-                if (arrayTable[__row, i]._down == true &&__room != null && arrayTable[__row, i]._rooms != null &&  arrayTable[__row, i]._rooms == __room) 
+                if (arrayTable[__row, i]._down == false &&__room != null && arrayTable[__row, i]._rooms != null &&  arrayTable[__row, i]._rooms == __room) 
                     return true;
 
-                if (arrayTable[__row, i]._down == true &&__teahers != null && arrayTable[__row, i]._teacher != null && sheakTeacherEq(arrayTable[__row, i]._teacher, __teahers))
+                if (arrayTable[__row, i]._down == false &&__teahers != null && arrayTable[__row, i]._teacher != null && sheakTeacherEq(arrayTable[__row, i]._teacher, __teahers))
                     return true;
             }
-
             return false;
         }
 
@@ -1119,16 +1118,14 @@ namespace Planning_Work
             string[] HFDteacher = arrayTable[__row, __column]._teacher;
             string HFDroom = arrayTable[__row, __column]._rooms;
             int HFDnumberColumn = searchColumnDragAndDrop(__column);
-
+            countColumnDAD = HFDnumberColumn;
             for (int i = 4; i < allRow; i++)
             {
                 if (redBackDataGrid(i, HFDteacher, HFDroom))
                 {
                     dataGridView1[HFDnumberColumn, i].Style.BackColor = Color.Red;
                 }
-
             }
-
         }
 
         // Drag and Drop Услровия
@@ -1158,7 +1155,11 @@ namespace Planning_Work
                     dataGridView1.DoDragDrop(DragRow, DragDropEffects.Copy);
                     for (int i = 0; i < allRow; i++) 
                     {
-
+                        dataGridView1[countColumnDAD, i].Style.BackColor = Color.White;
+                        if (arrayTable[i,countColumnDAD]._disiplines != null && arrayTable[i, countColumnDAD]._disiplines != "")
+                        {
+                            dataGridView1[countColumnDAD, i].Style.BackColor = searchDisiplinesColor(arrayTable[countColumnDAD, i]._disiplines);
+                        }
                     }
                 }
             }
@@ -1591,136 +1592,136 @@ namespace Planning_Work
             }
         }
         // Обеденяет ячейки сверху вних 
-        public void AllLessinCellsRow(DataGridViewCellPaintingEventArgs e, int column, int start_row, int back_row)
-        {
-            if (e.RowIndex >= start_row && e.ColumnIndex == column && e.RowIndex < back_row)
-            {
-                e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
-                e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
-            }
-            if (e.RowIndex == 4)
-            {
-                e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
-            }
+        //public void AllLessinCellsRow(DataGridViewCellPaintingEventArgs e, int column, int start_row, int back_row)
+        //{
+        //    if (e.RowIndex >= start_row && e.ColumnIndex == column && e.RowIndex < back_row)
+        //    {
+        //        e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
+        //        e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
+        //    }
+        //    if (e.RowIndex == 4)
+        //    {
+        //        e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+        //    }
 
-            if (e.ColumnIndex == 2)
-            {
-                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
-            }
-            if (e.ColumnIndex == countFirst + 4)
-            {
-                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
-            }
-            if (e.ColumnIndex == countTwo + countFirst + 6)
-            {
-                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
-            }
-            if (e.ColumnIndex == countFirst + countTwo + countTree + 8)
-            {
-                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
-            }
-            if (e.ColumnIndex == countFirst + countTwo + countTree + countFour + 10)
-            {
-                e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
-            }
-        }
-        private void comboBox1_TextChanged(object sender, EventArgs e)
-        {
-            switch (comboBox1.Text)
-            {
-                case ("1 курс"):
-                    for (int i = 1; i < allColumn; i++)
-                    {
-                        if (i > 0 && i < countFirst + 2)
-                        {
-                            dataGridView1.Columns[i].Visible = true;
-                        }
-                        else
-                        {
-                            dataGridView1.Columns[i].Visible = false;
+        //    if (e.ColumnIndex == 2)
+        //    {
+        //        e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+        //    }
+        //    if (e.ColumnIndex == countFirst + 4)
+        //    {
+        //        e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+        //    }
+        //    if (e.ColumnIndex == countTwo + countFirst + 6)
+        //    {
+        //        e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+        //    }
+        //    if (e.ColumnIndex == countFirst + countTwo + countTree + 8)
+        //    {
+        //        e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+        //    }
+        //    if (e.ColumnIndex == countFirst + countTwo + countTree + countFour + 10)
+        //    {
+        //        e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
+        //    }
+        //}
+        //private void comboBox1_TextChanged(object sender, EventArgs e)
+        //{
+        //    switch (comboBox1.Text)
+        //    {
+        //        case ("1 курс"):
+        //            for (int i = 1; i < allColumn; i++)
+        //            {
+        //                if (i > 0 && i < countFirst + 2)
+        //                {
+        //                    dataGridView1.Columns[i].Visible = true;
+        //                }
+        //                else
+        //                {
+        //                    dataGridView1.Columns[i].Visible = false;
 
-                        }
-                        dataGridView1.Columns[i].Frozen = false;
-                    }
-                    dataGridView1.Columns[1].Frozen = true;
-                    break;
-                case ("2 курс"):
-                    for (int i = 1; i < allColumn; i++)
-                    {
-                        if (i > countFirst + 2 && i < countTwo + countFirst + 4) 
-                        {
-                            dataGridView1.Columns[i].Visible = true;
-                        }
-                        else
-                        {
-                            dataGridView1.Columns[i].Visible = false;
+        //                }
+        //                dataGridView1.Columns[i].Frozen = false;
+        //            }
+        //            dataGridView1.Columns[1].Frozen = true;
+        //            break;
+        //        case ("2 курс"):
+        //            for (int i = 1; i < allColumn; i++)
+        //            {
+        //                if (i > countFirst + 2 && i < countTwo + countFirst + 4) 
+        //                {
+        //                    dataGridView1.Columns[i].Visible = true;
+        //                }
+        //                else
+        //                {
+        //                    dataGridView1.Columns[i].Visible = false;
 
-                        }
-                        dataGridView1.Columns[i].Frozen = false;
-                    }
-                    dataGridView1.Columns[countFirst + 3].Frozen = true;
-                    break;
-                case ("3 курс"):
-                    for (int i = 1; i < allColumn; i++)
-                    {
-                        if (i > countTwo + countFirst + 4 && i < countTwo + countFirst + countTree+6)
-                        {
-                            dataGridView1.Columns[i].Visible = true;
-                        }
-                        else
-                        {
-                            dataGridView1.Columns[i].Visible = false;
+        //                }
+        //                dataGridView1.Columns[i].Frozen = false;
+        //            }
+        //            dataGridView1.Columns[countFirst + 3].Frozen = true;
+        //            break;
+        //        case ("3 курс"):
+        //            for (int i = 1; i < allColumn; i++)
+        //            {
+        //                if (i > countTwo + countFirst + 4 && i < countTwo + countFirst + countTree+6)
+        //                {
+        //                    dataGridView1.Columns[i].Visible = true;
+        //                }
+        //                else
+        //                {
+        //                    dataGridView1.Columns[i].Visible = false;
 
-                        }
-                        dataGridView1.Columns[i].Frozen = false;
-                    }
-                    dataGridView1.Columns[countTwo + countFirst + 5].Frozen = true;
-                    break;
-                case ("4 курс"):
-                    for (int i = 1; i < allColumn; i++)
-                    {
-                        if (i > countFirst + countTwo + countTree + 6 && i < countFirst + countTwo + countTree + countFour + 8)
-                        {
-                            dataGridView1.Columns[i].Visible = true;
-                        }
-                        else
-                        {
-                            dataGridView1.Columns[i].Visible = false;
+        //                }
+        //                dataGridView1.Columns[i].Frozen = false;
+        //            }
+        //            dataGridView1.Columns[countTwo + countFirst + 5].Frozen = true;
+        //            break;
+        //        case ("4 курс"):
+        //            for (int i = 1; i < allColumn; i++)
+        //            {
+        //                if (i > countFirst + countTwo + countTree + 6 && i < countFirst + countTwo + countTree + countFour + 8)
+        //                {
+        //                    dataGridView1.Columns[i].Visible = true;
+        //                }
+        //                else
+        //                {
+        //                    dataGridView1.Columns[i].Visible = false;
 
-                        }
-                        dataGridView1.Columns[i].Frozen = false;
-                    }
-                    dataGridView1.Columns[countFirst + countTwo + countTree + 7].Frozen = true;
-                    break;
-                case ("5 курс"):
-                    for (int i = 1; i < allColumn; i++)
-                    {
-                        if (i > countFirst + countTwo + countTree + countFour + 8 && i < countFirst + countTwo + countTree + countFour + countFive+10)
-                        {
-                            dataGridView1.Columns[i].Visible = true;
-                        }
-                        else
-                        {
-                            dataGridView1.Columns[i].Visible = false;
+        //                }
+        //                dataGridView1.Columns[i].Frozen = false;
+        //            }
+        //            dataGridView1.Columns[countFirst + countTwo + countTree + 7].Frozen = true;
+        //            break;
+        //        case ("5 курс"):
+        //            for (int i = 1; i < allColumn; i++)
+        //            {
+        //                if (i > countFirst + countTwo + countTree + countFour + 8 && i < countFirst + countTwo + countTree + countFour + countFive+10)
+        //                {
+        //                    dataGridView1.Columns[i].Visible = true;
+        //                }
+        //                else
+        //                {
+        //                    dataGridView1.Columns[i].Visible = false;
 
-                        }
-                        dataGridView1.Columns[i].Frozen = false;
-                    }
-                    dataGridView1.Columns[countFirst + countTwo + countTree + countFour + 9].Frozen = true;
-                    break;
-                case ("Все курсы"):
-                    for (int i = 1; i < allColumn; i++)
-                    {
-                        dataGridView1.Columns[i].Visible = true;
-                        dataGridView1.Columns[i].Frozen = false;
-                    }
-                    dataGridView1.Columns[1].Frozen = true;
-                    break;
+        //                }
+        //                dataGridView1.Columns[i].Frozen = false;
+        //            }
+        //            dataGridView1.Columns[countFirst + countTwo + countTree + countFour + 9].Frozen = true;
+        //            break;
+        //        case ("Все курсы"):
+        //            for (int i = 1; i < allColumn; i++)
+        //            {
+        //                dataGridView1.Columns[i].Visible = true;
+        //                dataGridView1.Columns[i].Frozen = false;
+        //            }
+        //            dataGridView1.Columns[1].Frozen = true;
+        //            break;
 
-                default:
-                    break;
-            }
-        }
+        //        default:
+        //            break;
+        //    }
+        //}
 
         public void DragAndDrop_change2(int ColumnIndex, int RowIndex, int up, int down)
         {
