@@ -1156,9 +1156,10 @@ namespace Planning_Work
                     for (int i = 0; i < allRow; i++) 
                     {
                         dataGridView1[countColumnDAD, i].Style.BackColor = Color.White;
-                        if (arrayTable[i,countColumnDAD]._disiplines != null && arrayTable[i, countColumnDAD]._disiplines != "")
+                        VOSKRESENIE();
+                        if (arrayTable[i,countColumnDAD]._disiplines != null)
                         {
-                            dataGridView1[countColumnDAD, i].Style.BackColor = searchDisiplinesColor(arrayTable[countColumnDAD, i]._disiplines);
+                            dataGridView1[countColumnDAD, i].Style.BackColor = searchDisiplinesColor(arrayTable[i , countColumnDAD]._disiplines);
                         }
                     }
                 }
@@ -1494,6 +1495,12 @@ namespace Planning_Work
                 e.AdvancedBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.OutsetDouble;
             }
         }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
         private void comboBox1_TextChanged(object sender, EventArgs e)
         {
             switch (comboBox1.Text)
