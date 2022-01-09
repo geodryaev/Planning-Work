@@ -218,6 +218,47 @@ namespace Planning_Work
             getAllLogikalSql();
         }
 
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            string pathFile = "";
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                pathFile = saveFileDialog1.FileName;
+                //открытие книги
+
+                Excel.Application App;
+                Excel.Workbook xlsWB;
+                Excel.Worksheet xlsSheet;
+
+                App = new Excel.Application();
+                xlsWB = App.Workbooks.Add();
+                xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+
+                int countWorksheets = xlsWB.Worksheets.Count;
+                for (int j = 0; j < allColumn; j++)
+                {
+                    for (int i = 0; i< allRow; i++)
+                    {
+                        if (dataGridView1[j, i].Value != null && dataGridView1[j, i].ReadOnly == true)
+                        {
+                            xlsSheet.Cells[i + 1 , j + 1].Value = dataGridView1[j, i].Value.ToString();
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                }
+                    
+
+
+
+                xlsWB.SaveAs(@pathFile);
+                xlsWB.Close(true);
+                App.Quit();
+            }
+        }
+
         public CellsTable[,] GetArrayTableFSQL()
         {
             int i, j, lastRow = -1, lastColumn = -1;
@@ -1500,6 +1541,8 @@ namespace Planning_Work
         {
 
         }
+
+
 
         private void comboBox1_TextChanged(object sender, EventArgs e)
         {
