@@ -35,13 +35,13 @@ namespace Planning_Work
         }
 
         int countUploadFile = 0; //Количество заруженых сетевых графикоф
-        Allpeople baseItem = new Allpeople();
-        AllLessin[] allLesson = new AllLessin[5000];
+        readonly Allpeople baseItem = new Allpeople();
+        readonly AllLessin[] allLesson = new AllLessin[5000];
         Teacher teacher;
         int countAllLessons = 0;
         int Kastil1 = 0;
-        KMA clas = new KMA(); 
-        AllLessinAndRooms AllLessinRooms = new AllLessinAndRooms();
+        readonly KMA clas = new KMA();
+        readonly AllLessinAndRooms AllLessinRooms = new AllLessinAndRooms();
 
         //time
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -60,12 +60,12 @@ namespace Planning_Work
         }
         
         //-----------------------------------Очистка памяти
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             ClearMSQLtableSave();
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
+        private void Button2_Click_1(object sender, EventArgs e)
         {
             SqlDataReader buff;
             ClearMSQLtableSave();
@@ -431,7 +431,6 @@ namespace Planning_Work
         //координаты
         string coordinateToString(int ch, int i)
         {
-            string num = i.ToString();
             char buffSTART = '@';
             char buffEND = 'A';
             int nb = ch;
@@ -813,7 +812,7 @@ namespace Planning_Work
 
         public void getGoodMan (Excel.Worksheet shteet)
         {
-            int row = 2, column = 6, space =0;
+            int row, column = 6, space =0;
             int countGroup = countGroupForTeacher(shteet);
             for (int i = 6; i < countGroup+column; i++)
             {
@@ -938,7 +937,7 @@ namespace Planning_Work
             while(shteet.Cells[row,column].Text() != "")
             {
                 clas.setCountModule(countles(shteet.Cells[row + 1, column].Text()) );
-                clas.setModule(shteet.Cells[row, column].Text(), GetArrrayLesss(shteet.Cells[row + 1, column].Text(), countles(shteet.Cells[row + 1, column].Text())), itsNotChange(shteet.Cells[row, column + 1].Text()));
+                clas.SetModule(shteet.Cells[row, column].Text(), GetArrrayLesss(shteet.Cells[row + 1, column].Text(), countles(shteet.Cells[row + 1, column].Text())), itsNotChange(shteet.Cells[row, column + 1].Text()));
                 row += 2;
             }
         }
@@ -1283,7 +1282,6 @@ namespace Planning_Work
             return count;
 
         }
-
         public void GetOneAllLessin (DataGridView dategridView, int row, int column, int space, int allRow, CellsTable[,] arrayTable)
         {
             int count = 0;
@@ -1448,7 +1446,7 @@ namespace Planning_Work
             _DGD[_number]._rooms = new string[count];
         }
 
-        public void setModule(string name,string [] array, bool change)
+        public void SetModule(string name,string [] array, bool change)
         {
             _DGD[_number]._nameModule = name;
             _DGD[_number]._nChange = change;

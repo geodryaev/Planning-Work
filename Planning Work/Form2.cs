@@ -38,8 +38,6 @@ namespace Planning_Work
 
         public Form2(int countUploadFile, DateTime times)
         {
-            if (countUploadFile >= 0)
-            {
                 GetOtherForSQL();
                 lessons = GetLessingForSQL();
                 clas = GetAllRoomsForSQL();
@@ -117,21 +115,11 @@ namespace Planning_Work
 
                 arrayColorDisiplines = new AllColorDisipilens(GetCountUniversalDisiplines(lessons), false);
 
-
                 dataGridView1.AllowDrop = true;
                 dataGridView1.Rows[4].Frozen = true;
                 ColorDataGrid();
                 VOSKRESENIE();
                 getAlllogical();
-            }
-            else
-            {
-                MessageBox.Show("Загружено " + Convert.ToString(countUploadFile) + ". \nЗагрузите все 5 курсов для корректной работы програмы.");
-                InitializeComponent();
-                Close();
-            }
-
-
         }
 
         public Form2()
@@ -211,7 +199,7 @@ namespace Planning_Work
             comboBox1.Items.Add("Все курсы");
             dataGridView1.GridColor = Color.Black;
 
-            arrayColorDisiplines = GetArrayColorFSQL();
+            //arrayColorDisiplines = GetArrayColorFSQL();
             dataGridView1.AllowDrop = true;
             ColorDataGrid();
             VOSKRESENIE();
@@ -233,29 +221,87 @@ namespace Planning_Work
                 App = new Excel.Application();
                 xlsWB = App.Workbooks.Add();
                 xlsSheet = (Excel.Worksheet)xlsWB.Worksheets.get_Item(1);
+                App.DisplayAlerts = false;
+                Color white = Color.FromArgb(0000);
 
+
+                progressBar1.Maximum = allColumn * allRow + allRow * 5;
+                progressBar1.Value = 0;
+
+                
                 int countWorksheets = xlsWB.Worksheets.Count;
                 for (int j = 0; j < allColumn; j++)
                 {
+                    
                     for (int i = 0; i< allRow; i++)
                     {
-                        if (dataGridView1[j, i].Value != null && dataGridView1[j, i].ReadOnly == true)
+                        if (dataGridView1[j, i].Value != null)
                         {
-                            xlsSheet.Cells[i + 1 , j + 1].Value = dataGridView1[j, i].Value.ToString();
+                            xlsSheet.Cells[i + 1, j + 1].Value = dataGridView1[j, i].Value.ToString();
                         }
-                        else
-                        {
+                        progressBar1.Value++;
 
+                        Color a = Color.FromArgb(dataGridView1[j, i].Style.BackColor.ToArgb());
+                        if (Color.FromArgb(dataGridView1[j, i].Style.BackColor.ToArgb()) != white)
+                        {
+                            xlsSheet.Cells[i + 1, j + 1].Interior.Color = Color.FromArgb(dataGridView1[j, i].Style.BackColor.ToArgb());
                         }
                     }
                 }
-                    
+
+                xlsSheet.Range[xlsSheet.Cells[1, 1], xlsSheet.Cells[allRow + 5, allColumn + 5]].Cells.Borders.LineStyle = XlLineStyle.xlContinuous;
+
+                maskaExsel(xlsSheet, 1, countFirst);
+                maskaExsel(xlsSheet, countFirst + 3, countTwo);
+                maskaExsel(xlsSheet, countFirst + 5 + countTwo, countTree);
+                maskaExsel(xlsSheet, countFirst + 7 + countTwo + countTree, countFour);
+                maskaExsel(xlsSheet, countFirst + 9 + countTwo + countTree + countFour, countFive);
 
 
-
+                xlsSheet.Range[xlsSheet.Cells[1, 1], xlsSheet.Cells[allRow+5, allColumn+5]].EntireRow.AutoFit();
+                xlsSheet.Range[xlsSheet.Cells[1, 1], xlsSheet.Cells[allRow+5, allColumn+5]].EntireColumn.AutoFit();
+                xlsSheet.Range[xlsSheet.Cells[1, 1], xlsSheet.Cells[allRow + 5, allColumn + 5]].Style.VerticalAlignment = -4108;
+                xlsSheet.Range[xlsSheet.Cells[1, 1], xlsSheet.Cells[allRow + 5, allColumn + 5]].HorizontalAlignment = -4108;
+                
+                progressBar1.Value = 0;
+                App.DisplayAlerts = true;
                 xlsWB.SaveAs(@pathFile);
                 xlsWB.Close(true);
                 App.Quit();
+            }
+        }
+
+        //Передовать для Exsel
+        public void maskaExsel(Worksheet sheet, int _column, int _countGroup)
+        {
+
+            sheet.Range[sheet.Cells[1, _column], sheet.Cells[4, _column]].Merge();
+            sheet.Range[sheet.Cells[1, _column], sheet.Cells[4, _column]].Cells.Borders.Weight = XlBorderWeight.xlThick;
+            sheet.Cells[5,_column].Borders.Weight = XlBorderWeight.xlThick;
+            sheet.Cells[1, _column].Value = "Дата";
+            sheet.Range[sheet.Cells[3, _column+1], sheet.Cells[5, _column+1]].Merge();
+            sheet.Range[sheet.Cells[3, _column+1], sheet.Cells[5, _column+1]].Cells.Borders.Weight = XlBorderWeight.xlThick;
+            sheet.Cells[3, _column + 1].Value = "Ч";
+            sheet.Range[sheet.Cells[1, _column + 1], sheet.Cells[2, _column + 1 + _countGroup]].Merge();
+            sheet.Range[sheet.Cells[1, _column + 1], sheet.Cells[2, _column + 1 + _countGroup]].Cells.Borders.Weight = XlBorderWeight.xlThick;
+            sheet.Range[sheet.Cells[1, _column + 1], sheet.Cells[5, _column + 1 + _countGroup]].Cells.Borders.Weight = XlBorderWeight.xlThick;
+            string buffer = "\n";
+            for (int i = 6; i < allRow; i+=4)
+            {
+                sheet.Cells[i, _column].Style.VerticalAlignment = -4108;
+                for (int j =0; j < 4; j++)
+                {
+                    if (dataGridView1[_column - 1, i + j - 1].Value != null) 
+                    {
+                        buffer += dataGridView1[_column - 1, i + j - 1].Value.ToString()+'\n';
+                    }
+                    sheet.Cells[i + j, _column].Borders.Weight = XlBorderWeight.xlThick;
+                    sheet.Cells[i + j, _column+1].Borders.Weight = XlBorderWeight.xlThick;
+                }
+                sheet.Range[sheet.Cells[i, _column], sheet.Cells[i + 3, _column]].Merge();
+                sheet.Cells[i, _column].Value = buffer;
+                buffer = "\n";
+                progressBar1.Value++;
             }
         }
 
@@ -342,6 +388,7 @@ namespace Planning_Work
 
             return buffer;
         }
+        
         public void getAllLogikalSql()
         {
             for (int i = 0; i < allRow; i++)
@@ -596,7 +643,7 @@ namespace Planning_Work
                     {
                         while (read.Read())
                         {
-                            sqlSupTeacher.push(Convert.ToString(read.GetValue(1)), Convert.ToString(read.GetValue(2)), Convert.ToString(read.GetValue(3)), Convert.ToString(read.GetValue(4)));
+                            sqlSupTeacher.Push(Convert.ToString(read.GetValue(1)), Convert.ToString(read.GetValue(2)), Convert.ToString(read.GetValue(3)), Convert.ToString(read.GetValue(4)));
                         }
                     }
                 }
@@ -1198,9 +1245,9 @@ namespace Planning_Work
                     {
                         dataGridView1[countColumnDAD, i].Style.BackColor = Color.White;
                         VOSKRESENIE();
-                        if (arrayTable[i,countColumnDAD]._disiplines != null)
+                        if (arrayTable[i, countColumnDAD]._disiplines != null)
                         {
-                            dataGridView1[countColumnDAD, i].Style.BackColor = searchDisiplinesColor(arrayTable[i , countColumnDAD]._disiplines);
+                            dataGridView1[countColumnDAD, i].Style.BackColor = searchDisiplinesColor(arrayTable[i, countColumnDAD]._disiplines);
                         }
                     }
                 }
@@ -1354,8 +1401,8 @@ namespace Planning_Work
                     
                 }
             }
-            ColorDataGrid();
             VOSKRESENIE();
+            ColorDataGrid();
             ColorDataGridAll();
         }
 
@@ -1429,8 +1476,8 @@ namespace Planning_Work
                                             allCheakPozizitions(hit.RowIndex - up + i, hit.ColumnIndex);
                                         }
                                     }
-                                    ColorDataGrid();
                                     VOSKRESENIE();
+                                    ColorDataGrid();
                                     ColorDataGridAll();
                                 }
                                 else
@@ -1454,9 +1501,8 @@ namespace Planning_Work
                     MessageBox.Show("Пожалуйста, запоните для начала ячейку");
                 }
             }
-
         }
-
+        
         public bool DragAndDrop_chaekPool(int Frow, int Fcol, int up, int down)
         {
             for (int i = Frow - up; i <= Frow + down; i++)
@@ -1977,20 +2023,21 @@ namespace Planning_Work
         //Закрашивает воскресенье
         public void VOSKRESENIE()
         {
+            Color buf = dataGridView1[1, 1].Style.BackColor;
             for (int i = 7; i < allRow; i += 4)
             {
                 if (dataGridView1[0, i].Value.ToString() == "вс")
                 {
                     for (int j = 0; j < allColumn; j++)
                     {
-                        dataGridView1[j, i - 2].Style.BackColor = Color.Orange;
-                        dataGridView1[j, i - 1].Style.BackColor = Color.Orange;
-                        dataGridView1[j, i].Style.BackColor = Color.Orange;
-                        dataGridView1[j, i + 1].Style.BackColor = Color.Orange;
-                        arrayTable[i - 2, j]._down = true;
-                        arrayTable[i - 1, j]._down = true;
-                        arrayTable[i, j]._down = true;
-                        arrayTable[i + 1, j]._down = true;
+                        for (int k = 0; k < 4; k++)
+                        {
+                            if (dataGridView1[j, i + 1 - k].Style.BackColor == buf || dataGridView1[j, i + 1 - k].Style.BackColor == Color.White || dataGridView1[j, i + 1 - k].Style.BackColor == Color.DimGray)
+                            {
+                                dataGridView1[j, i + 1 - k].Style.BackColor = Color.Orange;
+                                arrayTable[i + 1 - k, j]._down = true;
+                            }
+                        }
                     }
                 }
             }
@@ -2426,7 +2473,7 @@ namespace Planning_Work
             _count = 0;
         }
 
-        public void push(string nameDis, string nameGroupe, string team, string teacher)
+        public void Push(string nameDis, string nameGroupe, string team, string teacher)
         {
             OnePozitionsTeacher[] answer = new OnePozitionsTeacher[_count + 1];
             for (int i = 0; i < _array.Length; i++)
